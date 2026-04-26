@@ -3,42 +3,29 @@
 import { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 export default function Login() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
-    const [formData, setFormData] = useState({
-        email: '',
-        password: '',
-    });
+    const [formData, setFormData] = useState({ email: '', password: '' });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData(prev => ({
-            ...prev,
-            [e.target.name]: e.target.value
-        }));
+        setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError(null);
-
         try {
-            const { data, error: signInError } = await supabase.auth.signInWithPassword({
+            const { error: signInError } = await supabase.auth.signInWithPassword({
                 email: formData.email,
                 password: formData.password,
             });
-
             if (signInError) throw signInError;
-
-            // Success, redirect to dashboard or intended URL
             router.push('/dashboard');
-            router.refresh();
-
         } catch (err: any) {
             setError(err.message || 'Invalid login credentials.');
         } finally {
@@ -47,49 +34,107 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 font-body">
-            <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-xl">
-                <div>
-                    <Link href="/" className="flex justify-center mb-6 text-2xl font-bold font-heading text-gray-900 tracking-tight text-center uppercase">
-                        O'GAD Impact
-                    </Link>
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 font-heading">
-                        Welcome back
+        <div className="min-h-screen flex">
+            {/* Left panel — brand */}
+            <div
+                className="hidden lg:flex lg:w-[45%] flex-col justify-between p-12 relative overflow-hidden"
+                style={{ backgroundColor: '#030712' }}
+            >
+                {/* Subtle grid pattern */}
+                <div className="absolute inset-0 opacity-[0.03]" style={{
+                    backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)',
+                    backgroundSize: '48px 48px'
+                }} />
+                {/* Blue glow */}
+                <div className="absolute bottom-0 left-0 w-96 h-96 rounded-full opacity-20 blur-[100px]" style={{ backgroundColor: '#306CEC' }} />
+
+                {/* Logo */}
+                <Link href="/" className="flex items-center gap-2.5 relative z-10">
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#306CEC' }}>
+                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <span className="text-[14px] font-bold text-white" style={{ fontFamily: 'League Spartan, sans-serif' }}>
+                        THE O'GAD <span className="font-light opacity-70">IMPACT GROUP</span>
+                    </span>
+                </Link>
+
+                {/* Mid content */}
+                <div className="relative z-10">
+                    <p className="text-[11px] font-bold tracking-[0.25em] uppercase mb-6" style={{ color: '#306CEC', fontFamily: 'DM Sans, sans-serif' }}>
+                        Client Portal
+                    </p>
+                    <h2 className="font-bold text-white leading-[1.1] mb-6" style={{ fontFamily: 'League Spartan, sans-serif', fontSize: 'clamp(2rem, 3.5vw, 3rem)' }}>
+                        Manage your consultations in one place.
                     </h2>
-                    <p className="mt-2 text-center text-sm text-gray-600">
-                        Or{' '}
-                        <Link href="/auth/signup" className="font-medium text-[#306CEC] hover:text-blue-500">
-                            create a new account
-                        </Link>
+                    <p className="text-gray-400 leading-relaxed text-[15px]" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                        Track your sessions, review project progress, and stay aligned with our team from your personal dashboard.
                     </p>
                 </div>
 
-                {error && (
-                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm text-center">
-                        {error}
-                    </div>
-                )}
+                {/* Bottom quote */}
+                <div className="relative z-10 border-l-2 pl-5" style={{ borderColor: '#306CEC' }}>
+                    <p className="text-white/60 text-sm italic leading-relaxed" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                        "Our work goes beyond advisory. We design, build, and implement."
+                    </p>
+                    <p className="text-white/30 text-xs mt-2" style={{ fontFamily: 'DM Sans, sans-serif' }}>The O'GAD Impact Group</p>
+                </div>
+            </div>
 
-                <form className="mt-8 space-y-6" onSubmit={handleLogin}>
-                    <div className="space-y-4">
+            {/* Right panel — form */}
+            <div className="flex-1 flex items-center justify-center px-6 py-12 bg-white">
+                <div className="w-full max-w-sm">
+                    {/* Mobile logo */}
+                    <Link href="/" className="flex items-center gap-2 mb-10 lg:hidden">
+                        <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#306CEC' }}>
+                            <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </div>
+                        <span className="text-[13px] font-bold text-gray-900" style={{ fontFamily: 'League Spartan, sans-serif' }}>
+                            THE O'GAD IMPACT GROUP
+                        </span>
+                    </Link>
+
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2" style={{ fontFamily: 'League Spartan, sans-serif' }}>
+                        Welcome back
+                    </h1>
+                    <p className="text-sm text-gray-500 mb-8" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                        Don't have an account?{' '}
+                        <Link href="/auth/signup" className="font-semibold transition-colors" style={{ color: '#306CEC' }}>
+                            Sign up
+                        </Link>
+                    </p>
+
+                    {error && (
+                        <div className="mb-6 px-4 py-3 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                            {error}
+                        </div>
+                    )}
+
+                    <form onSubmit={handleLogin} className="space-y-5">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Email address</label>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1.5" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                                Email address
+                            </label>
                             <input
                                 name="email"
                                 type="email"
                                 required
                                 value={formData.email}
                                 onChange={handleChange}
-                                className="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#306CEC] focus:border-[#306CEC] sm:text-sm"
-                                placeholder="jane@example.com"
+                                placeholder="jane@company.com"
+                                className="w-full px-4 py-3 rounded-xl border border-gray-200 text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:border-[#306CEC] focus:ring-2 focus:ring-[#306CEC]/10 transition-all"
+                                style={{ fontFamily: 'DM Sans, sans-serif' }}
                             />
                         </div>
 
                         <div>
-                            <div className="flex items-center justify-between mb-1">
-                                <label className="block text-sm font-medium text-gray-700">Password</label>
-                                <a href="#" className="text-sm font-medium text-[#306CEC] hover:text-blue-500">
-                                    Forgot your password?
+                            <div className="flex items-center justify-between mb-1.5">
+                                <label className="text-sm font-semibold text-gray-700" style={{ fontFamily: 'DM Sans, sans-serif' }}>Password</label>
+                                <a href="#" className="text-xs font-medium transition-colors" style={{ color: '#306CEC', fontFamily: 'DM Sans, sans-serif' }}>
+                                    Forgot password?
                                 </a>
                             </div>
                             <input
@@ -98,22 +143,22 @@ export default function Login() {
                                 required
                                 value={formData.password}
                                 onChange={handleChange}
-                                className="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#306CEC] focus:border-[#306CEC] sm:text-sm"
                                 placeholder="••••••••"
+                                className="w-full px-4 py-3 rounded-xl border border-gray-200 text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:border-[#306CEC] focus:ring-2 focus:ring-[#306CEC]/10 transition-all"
+                                style={{ fontFamily: 'DM Sans, sans-serif' }}
                             />
                         </div>
-                    </div>
 
-                    <div>
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-[#306CEC] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#306CEC] transition-colors disabled:opacity-70 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
+                            className="w-full py-3 rounded-xl text-white text-sm font-semibold transition-all hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed"
+                            style={{ backgroundColor: '#306CEC', fontFamily: 'DM Sans, sans-serif' }}
                         >
-                            {isLoading ? 'Signing in...' : 'Sign in'}
+                            {isLoading ? 'Signing in…' : 'Sign in'}
                         </button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     );

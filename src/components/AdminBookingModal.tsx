@@ -91,6 +91,7 @@ export default function AdminBookingModal({ isOpen, onClose, booking, onSave }: 
         switch (s.toLowerCase()) {
             case 'pending': return 'bg-yellow-100 text-yellow-800';
             case 'contacted': return 'bg-blue-100 text-blue-800';
+            case 'scheduled': return 'bg-purple-100 text-purple-800';
             case 'approved': return 'bg-green-100 text-green-800';
             case 'rejected': return 'bg-red-100 text-red-800';
             case 'resolved': return 'bg-gray-100 text-gray-800';
@@ -171,6 +172,23 @@ export default function AdminBookingModal({ isOpen, onClose, booking, onSave }: 
                             </h3>
 
                             <div className="space-y-5">
+                                {/* Calendly-booked date banner */}
+                                {booking.scheduled_date && booking.status === 'scheduled' && (
+                                    <div className="flex items-center gap-3 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                                        <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                            <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs font-semibold text-purple-700 uppercase tracking-wider">Booked via Calendly</p>
+                                            <p className="text-sm font-bold text-purple-900">
+                                                {new Date(booking.scheduled_date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                                                {' at '}
+                                                {new Date(booking.scheduled_date).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                                     <select
@@ -180,6 +198,7 @@ export default function AdminBookingModal({ isOpen, onClose, booking, onSave }: 
                                     >
                                         <option value="pending">Pending Review</option>
                                         <option value="contacted">Contacted</option>
+                                        <option value="scheduled">Scheduled</option>
                                         <option value="approved">Approved</option>
                                         <option value="rejected">Rejected</option>
                                         <option value="resolved">Resolved / Completed</option>

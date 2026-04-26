@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
 import { supabase } from '@/lib/supabaseClient';
 import { checkIsAdmin } from '@/lib/checkAdmin';
 
@@ -13,44 +14,46 @@ export default function Navbar() {
     const [isMobileServicesOpen, setIsMobileServicesOpen] = useState(false);
     const [user, setUser] = useState<any>(null);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
     const pathname = usePathname() || "";
+    const router = useRouter();
     const isNavigating = useRef(false);
+    const servicesCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const handleSignOut = async () => {
+        await supabase.auth.signOut();
+        router.push('/');
+    };
+
+    const openServices = () => {
+        if (servicesCloseTimer.current) clearTimeout(servicesCloseTimer.current);
+        setIsServicesOpen(true);
+    };
+    const closeServices = () => {
+        servicesCloseTimer.current = setTimeout(() => setIsServicesOpen(false), 200);
+    };
 
     useEffect(() => {
-        // Enable smooth scrolling for anchor links
         document.documentElement.style.scrollBehavior = 'smooth';
     }, []);
 
     useEffect(() => {
-        // Set initial hash - default to hero if no hash in URL
         const initialHash = window.location.hash || "#hero";
         setActiveHash(initialHash);
 
-        // Listen for hash changes from link clicks
         const handleHashChange = () => {
             const newHash = window.location.hash;
             setActiveHash(newHash);
             isNavigating.current = true;
-
-            // Reset navigation flag after a delay to allow scroll to complete
-            setTimeout(() => {
-                isNavigating.current = false;
-            }, 1000);
+            setTimeout(() => { isNavigating.current = false; }, 1000);
         };
 
         window.addEventListener('hashchange', handleHashChange);
 
-        // Intersection Observer to detect which section is in view
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px 0px -66% 0px',
-            threshold: 0
-        };
+        const observerOptions = { root: null, rootMargin: '0px 0px -66% 0px', threshold: 0 };
 
         const observerCallback = (entries: IntersectionObserverEntry[]) => {
-            // Only update from observer if we're not actively navigating
             if (isNavigating.current) return;
-
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const id = entry.target.id;
@@ -62,17 +65,13 @@ export default function Navbar() {
         };
 
         const observer = new IntersectionObserver(observerCallback, observerOptions);
-
-        // Only observe specific sections for navbar
         const hero = document.getElementById('hero');
         const about = document.getElementById('our-company');
         const contact = document.getElementById('get-in-touch');
-
         if (hero) observer.observe(hero);
         if (about) observer.observe(about);
         if (contact) observer.observe(contact);
 
-        // Supabase Auth Listener
         const checkUser = async () => {
             const { data: { user } } = await supabase.auth.getUser();
             setUser(user);
@@ -85,7 +84,7 @@ export default function Navbar() {
         };
         checkUser();
 
-        const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+        const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
             const currentUser = session?.user ?? null;
             setUser(currentUser);
             if (currentUser) {
@@ -103,11 +102,17 @@ export default function Navbar() {
         };
     }, []);
 
+    useEffect(() => {
+        const handleScroll = () => setScrolled(window.scrollY > 50);
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     const navLinks = [
         { href: "/#hero", label: "Home" },
         { href: "/#our-company", label: "About" },
         { href: "/services", label: "Services", isDropdown: true },
-        { href: "/programs", label: "Programs" },
+        { href: "/#programs", label: "Programs" },
         { href: "/#get-in-touch", label: "Contact" }
     ];
 
@@ -121,85 +126,61 @@ export default function Navbar() {
 
     const handleNavClick = (href: string) => {
         if (href.startsWith("/#")) {
-            const sectionId = href.slice(2); // Remove "/#" to get just the ID
-            const hashValue = `#${sectionId}`; // Proper hash format
-
-            // If not on homepage, navigate to homepage with the hash first
-            if (pathname !== "/") {
-                window.location.href = href;
-                return;
-            }
-
+            const sectionId = href.slice(2);
+            const hashValue = `#${sectionId}`;
+            if (pathname !== "/") { window.location.href = href; return; }
             isNavigating.current = true;
-
-            // Find and scroll to the element on current page
             const element = document.getElementById(sectionId);
             if (element) {
                 element.scrollIntoView({ behavior: 'smooth' });
-                // Update hash and state after scroll starts
                 window.location.hash = hashValue;
                 setActiveHash(hashValue);
             }
-
-            // Reset navigation flag
-            setTimeout(() => {
-                isNavigating.current = false;
-            }, 1000);
+            setTimeout(() => { isNavigating.current = false; }, 1000);
         }
     };
 
     const isActive = (href: string) => {
         if (href.startsWith("/#")) {
-            const targetHash = href.slice(1); // "#hero", "#our-company", "#get-in-touch"
-            // Home is active only on homepage with no hash or #hero hash
-            if (targetHash === "#hero") {
-                return pathname === "/" && (activeHash === "" || activeHash === "#hero");
-            }
-            // Other sections active when on homepage and hash matches
+            const targetHash = href.slice(1);
+            if (targetHash === "#hero") return pathname === "/" && (activeHash === "" || activeHash === "#hero");
             return pathname === "/" && activeHash === targetHash;
         }
-        // For Services, check if pathname starts with /services
-        if (href === "/services") {
-            return pathname.startsWith("/services");
-        }
-        // For other links like /programs
+        if (href === "/services") return pathname.startsWith("/services");
         return pathname === href;
     };
 
-    const showNavbarGradient = () => {
-        // Show gradient unless we're on homepage and in hero section, or at the top of a dashboard
-        if (pathname === "/" && (activeHash === "" || activeHash === "#hero")) {
-            return false;
-        }
-        if ((pathname === "/dashboard" || pathname === "/admin/dashboard") && !scrolled) {
-            return false;
-        }
+    const showNavbarBg = () => {
+        if (pathname === "/" && (activeHash === "" || activeHash === "#hero")) return false;
+        if ((pathname === "/dashboard" || pathname === "/admin/dashboard") && !scrolled) return false;
         return true;
     };
 
-    const [scrolled, setScrolled] = useState(false);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            const isScrolled = window.scrollY > 50;
-            if (isScrolled !== scrolled) {
-                setScrolled(isScrolled);
-            }
-        };
-
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, [scrolled]);
+    const onHero = !showNavbarBg();
 
     return (
-        <nav className={`fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ${showNavbarGradient() ? 'bg-gray-900 border-b border-gray-800' : 'bg-transparent'
-            }`}>
-            <div className="max-w-7xl mx-auto px-6 md:px-12 w-full">
-                <div className="flex justify-between items-center h-16">
+        <nav className="fixed top-0 left-0 right-0 w-full z-50 px-4 md:px-6 pt-4">
+            <div
+                className={`max-w-7xl mx-auto transition-all duration-500 rounded-2xl ${
+                    onHero
+                        ? 'bg-white/[0.06] backdrop-blur-md border border-white/[0.12]'
+                        : 'bg-gray-950/95 backdrop-blur-xl border border-white/[0.08] shadow-[0_8px_40px_rgba(0,0,0,0.5)]'
+                }`}
+            >
+                <div className="flex justify-between items-center h-14 px-5">
+
                     {/* Logo */}
-                    <Link href="/" className="flex items-center gap-3 flex-shrink-0">
-                        <span className="text-lg font-bold text-white" style={{ fontFamily: 'League Spartan, sans-serif', textTransform: 'uppercase', letterSpacing: '-0.01em' }}>
-                            THE O'GAD <span className="font-light">IMPACT GROUP</span>
+                    <Link href="/" className="flex items-center gap-2.5 flex-shrink-0">
+                        <Image
+                            src="/images/1001224211.png"
+                            alt="O'Gad Impact Group"
+                            width={32}
+                            height={32}
+                            className="w-8 h-8 rounded-lg flex-shrink-0"
+                            unoptimized
+                        />
+                        <span className="text-[14px] font-bold text-white tracking-tight" style={{ fontFamily: 'League Spartan, sans-serif' }}>
+                            THE O'GAD <span className="font-light opacity-80">IMPACT GROUP</span>
                         </span>
                     </Link>
 
@@ -207,37 +188,33 @@ export default function Navbar() {
                     <div className="hidden md:flex items-center gap-1" style={{ fontFamily: 'DM Sans, sans-serif' }}>
                         {navLinks.map((link) =>
                             link.isDropdown ? (
-                                <div key={link.href} className="relative group">
+                                <div key={link.href} className="relative" onMouseEnter={openServices} onMouseLeave={closeServices}>
                                     <Link
                                         href={link.href}
-                                        onMouseEnter={() => setIsServicesOpen(true)}
-                                        onMouseLeave={() => setIsServicesOpen(false)}
-                                        className={`px-4 py-2 font-medium rounded-lg transition-colors flex items-center gap-2 ${pathname.startsWith(link.href)
-                                            ? 'text-white'
-                                            : 'text-white hover:text-white/80'
-                                            }`}
-                                        style={{
-                                            backgroundColor: pathname.startsWith(link.href) ? '#306CEC' : 'transparent'
-                                        }}
+                                        className={`px-3.5 py-2 rounded-lg text-[13px] font-medium transition-all flex items-center gap-1.5 ${
+                                            pathname.startsWith('/services')
+                                                ? 'text-white bg-white/10'
+                                                : 'text-white/60 hover:text-white hover:bg-white/[0.07]'
+                                        }`}
                                     >
                                         {link.label}
-                                        <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7' />
+                                        <svg
+                                            className={`w-3 h-3 transition-transform duration-200 ${isServicesOpen ? 'rotate-180' : ''}`}
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        >
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
                                         </svg>
                                     </Link>
 
-                                    {/* Dropdown Menu */}
                                     {isServicesOpen && (
                                         <div
-                                            onMouseEnter={() => setIsServicesOpen(true)}
-                                            onMouseLeave={() => setIsServicesOpen(false)}
-                                            className='absolute top-full left-0 mt-0 bg-gray-900 border border-gray-800 rounded-lg shadow-2xl min-w-max py-2 z-50'
+                                            className="absolute top-full left-0 mt-2 bg-gray-950 border border-white/[0.08] rounded-xl shadow-[0_16px_48px_rgba(0,0,0,0.6)] min-w-max py-1.5 z-50"
                                         >
                                             {services.map((service, idx) => (
                                                 <Link
                                                     key={idx}
                                                     href={service.href}
-                                                    className='block px-4 py-3 text-white hover:bg-gray-800 hover:text-blue-400 transition-colors text-sm'
+                                                    className="flex items-center px-4 py-2.5 text-white/60 hover:text-white hover:bg-white/[0.05] transition-colors text-[13px]"
                                                     onClick={() => setIsServicesOpen(false)}
                                                 >
                                                     {service.title}
@@ -250,13 +227,11 @@ export default function Navbar() {
                                 <button
                                     key={link.href}
                                     onClick={() => handleNavClick(link.href)}
-                                    className={`px-4 py-2 font-medium rounded-lg transition-colors ${isActive(link.href)
-                                        ? 'text-white'
-                                        : 'text-white hover:text-white/80'
-                                        }`}
-                                    style={{
-                                        backgroundColor: isActive(link.href) ? '#306CEC' : 'transparent'
-                                    }}
+                                    className={`px-3.5 py-2 rounded-lg text-[13px] font-medium transition-all ${
+                                        isActive(link.href)
+                                            ? 'text-white bg-white/10'
+                                            : 'text-white/60 hover:text-white hover:bg-white/[0.07]'
+                                    }`}
                                 >
                                     {link.label}
                                 </button>
@@ -264,13 +239,11 @@ export default function Navbar() {
                                 <Link
                                     key={link.href}
                                     href={link.href}
-                                    className={`px-4 py-2 font-medium rounded-lg transition-colors ${isActive(link.href)
-                                        ? 'text-white'
-                                        : 'text-white hover:text-white/80'
-                                        }`}
-                                    style={{
-                                        backgroundColor: isActive(link.href) ? '#306CEC' : 'transparent'
-                                    }}
+                                    className={`px-3.5 py-2 rounded-lg text-[13px] font-medium transition-all ${
+                                        isActive(link.href)
+                                            ? 'text-white bg-white/10'
+                                            : 'text-white/60 hover:text-white hover:bg-white/[0.07]'
+                                    }`}
                                 >
                                     {link.label}
                                 </Link>
@@ -278,33 +251,44 @@ export default function Navbar() {
                         )}
                     </div>
 
-                    {/* CTA Button + Mobile Menu */}
-                    <div className="flex items-center gap-4">
+                    {/* CTA + Mobile Toggle */}
+                    <div className="flex items-center gap-2">
                         {user ? (
-                            <div className="hidden md:flex items-center gap-4">
-                                <button onClick={() => supabase.auth.signOut()} className="text-white/80 hover:text-white font-medium text-sm transition-colors">
+                            <div className="hidden md:flex items-center gap-2">
+                                <button
+                                    onClick={handleSignOut}
+                                    className="text-white/50 hover:text-white text-[13px] font-medium transition-colors px-3 py-2"
+                                >
                                     Sign Out
                                 </button>
-                                <Link href={isAdmin ? "/admin/dashboard" : "/dashboard"} className="text-white px-6 py-2.5 rounded-lg font-semibold transition-all hover:shadow-lg" style={{ fontFamily: 'DM Sans, sans-serif', backgroundColor: '#306CEC' }}>
+                                <Link
+                                    href={isAdmin ? "/admin/dashboard" : "/dashboard"}
+                                    className="text-white px-4 py-2 rounded-lg text-[13px] font-semibold transition-all hover:opacity-90"
+                                    style={{ backgroundColor: '#306CEC' }}
+                                >
                                     {isAdmin ? "Admin Portal" : "Dashboard"}
                                 </Link>
                             </div>
                         ) : (
-                            <Link href="/auth/login" className="hidden md:block text-white px-6 py-2.5 rounded-lg font-semibold transition-all hover:shadow-lg" style={{ fontFamily: 'DM Sans, sans-serif', backgroundColor: '#306CEC' }}>
+                            <Link
+                                href="/auth/login"
+                                className="hidden md:flex items-center text-white px-4 py-2 rounded-lg text-[13px] font-semibold transition-all hover:opacity-90"
+                                style={{ backgroundColor: '#306CEC' }}
+                            >
                                 Log In
                             </Link>
                         )}
 
-                        {/* Mobile Menu Button */}
                         <button
                             onClick={() => setIsOpen(!isOpen)}
                             className="md:hidden p-2 hover:bg-white/10 rounded-lg transition-colors"
+                            aria-label="Toggle menu"
                         >
-                            <svg className='w-6 h-6 text-white' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 {isOpen ? (
-                                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                 ) : (
-                                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M4 6h16M4 12h16M4 18h16' />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                                 )}
                             </svg>
                         </button>
@@ -313,30 +297,30 @@ export default function Navbar() {
 
                 {/* Mobile Navigation */}
                 {isOpen && (
-                    <div className='md:hidden border-t border-white/10 py-4 space-y-2 bg-black/20 backdrop-blur-sm' style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                    <div className="md:hidden border-t border-white/[0.08] py-3 px-2 space-y-0.5" style={{ fontFamily: 'DM Sans, sans-serif' }}>
                         {navLinks.map((link) =>
                             link.isDropdown ? (
                                 <div key={link.href}>
                                     <button
                                         onClick={() => setIsMobileServicesOpen(!isMobileServicesOpen)}
-                                        className='block w-full text-left px-4 py-2 font-medium rounded-lg transition-colors text-white hover:bg-white/10 flex items-center justify-between'
+                                        className="flex w-full items-center justify-between px-3 py-2.5 text-[13px] font-medium rounded-lg text-white/60 hover:text-white hover:bg-white/[0.07] transition-colors"
                                     >
                                         {link.label}
-                                        <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7' />
+                                        <svg
+                                            className={`w-3.5 h-3.5 transition-transform duration-200 ${isMobileServicesOpen ? 'rotate-180' : ''}`}
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        >
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
                                         </svg>
                                     </button>
                                     {isMobileServicesOpen && (
-                                        <div className='bg-gray-900/50 rounded-lg ml-4 mt-2 space-y-1'>
+                                        <div className="ml-3 mt-0.5 mb-1 space-y-0.5 border-l border-white/[0.08] pl-3">
                                             {services.map((service, idx) => (
                                                 <Link
                                                     key={idx}
                                                     href={service.href}
-                                                    className='block px-4 py-2 text-white text-sm hover:bg-gray-800 hover:text-blue-400 transition-colors rounded'
-                                                    onClick={() => {
-                                                        setIsOpen(false);
-                                                        setIsMobileServicesOpen(false);
-                                                    }}
+                                                    className="flex items-center gap-2 py-2 px-2 text-white/50 hover:text-white text-[13px] transition-colors rounded-lg hover:bg-white/[0.05]"
+                                                    onClick={() => { setIsOpen(false); setIsMobileServicesOpen(false); }}
                                                 >
                                                     {service.title}
                                                 </Link>
@@ -347,17 +331,12 @@ export default function Navbar() {
                             ) : link.href.startsWith("/#") ? (
                                 <button
                                     key={link.href}
-                                    onClick={() => {
-                                        handleNavClick(link.href);
-                                        setIsOpen(false);
-                                    }}
-                                    className={`block w-full text-left px-4 py-2 font-medium rounded-lg transition-colors ${isActive(link.href)
-                                        ? 'text-white'
-                                        : 'text-white hover:bg-white/10'
-                                        }`}
-                                    style={{
-                                        backgroundColor: isActive(link.href) ? '#306CEC' : 'transparent'
-                                    }}
+                                    onClick={() => { handleNavClick(link.href); setIsOpen(false); }}
+                                    className={`flex w-full items-center px-3 py-2.5 text-[13px] font-medium rounded-lg transition-colors ${
+                                        isActive(link.href)
+                                            ? 'text-white bg-white/10'
+                                            : 'text-white/60 hover:text-white hover:bg-white/[0.07]'
+                                    }`}
                                 >
                                     {link.label}
                                 </button>
@@ -365,48 +344,46 @@ export default function Navbar() {
                                 <Link
                                     key={link.href}
                                     href={link.href}
-                                    className={`block px-4 py-2 font-medium rounded-lg transition-colors ${isActive(link.href)
-                                        ? 'text-white'
-                                        : 'text-white hover:bg-white/10'
-                                        }`}
-                                    style={{
-                                        backgroundColor: isActive(link.href) ? '#306CEC' : 'transparent'
-                                    }}
+                                    onClick={() => setIsOpen(false)}
+                                    className={`flex px-3 py-2.5 text-[13px] font-medium rounded-lg transition-colors ${
+                                        isActive(link.href)
+                                            ? 'text-white bg-white/10'
+                                            : 'text-white/60 hover:text-white hover:bg-white/[0.07]'
+                                    }`}
                                 >
                                     {link.label}
                                 </Link>
                             )
                         )}
-                        {user ? (
-                            <>
+                        <div className="pt-3 mt-1 border-t border-white/[0.08] space-y-2 px-1 pb-1">
+                            {user ? (
+                                <>
+                                    <Link
+                                        href={isAdmin ? "/admin/dashboard" : "/dashboard"}
+                                        onClick={() => setIsOpen(false)}
+                                        className="flex justify-center w-full text-white px-5 py-2.5 rounded-xl text-[13px] font-semibold"
+                                        style={{ backgroundColor: '#306CEC' }}
+                                    >
+                                        {isAdmin ? "Admin Portal" : "Dashboard"}
+                                    </Link>
+                                    <button
+                                        onClick={() => { handleSignOut(); setIsOpen(false); }}
+                                        className="flex justify-center w-full text-white/60 hover:text-white px-5 py-2.5 rounded-xl text-[13px] font-semibold border border-white/[0.12] transition-colors"
+                                    >
+                                        Sign Out
+                                    </button>
+                                </>
+                            ) : (
                                 <Link
-                                    href={isAdmin ? "/admin/dashboard" : "/dashboard"}
+                                    href="/auth/login"
                                     onClick={() => setIsOpen(false)}
-                                    className="block w-full text-center mt-4 text-white px-6 py-2.5 rounded-lg font-semibold transition-all"
+                                    className="flex justify-center w-full text-white px-5 py-2.5 rounded-xl text-[13px] font-semibold"
                                     style={{ backgroundColor: '#306CEC' }}
                                 >
-                                    {isAdmin ? "Admin Portal" : "Dashboard"}
+                                    Log In
                                 </Link>
-                                <button
-                                    onClick={() => {
-                                        supabase.auth.signOut();
-                                        setIsOpen(false);
-                                    }}
-                                    className="block w-full text-center mt-2 text-white/80 hover:text-white px-6 py-2.5 rounded-lg font-semibold transition-all border border-white/20"
-                                >
-                                    Sign Out
-                                </button>
-                            </>
-                        ) : (
-                            <Link
-                                href="/auth/login"
-                                onClick={() => setIsOpen(false)}
-                                className="block w-full text-center mt-4 text-white px-6 py-2.5 rounded-lg font-semibold transition-all"
-                                style={{ backgroundColor: '#306CEC' }}
-                            >
-                                Log In
-                            </Link>
-                        )}
+                            )}
+                        </div>
                     </div>
                 )}
             </div>

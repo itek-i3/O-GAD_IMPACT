@@ -27,8 +27,8 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "O'GAD CLASS",
-  description: "O'GAD CLASS",
+  title: "The O'GAD Impact Group",
+  description: "Multidisciplinary consultancy firm helping founders, institutions, and enterprises across Africa move from ideas to execution and from growth to scale.",
 };
 
 export default function RootLayout({

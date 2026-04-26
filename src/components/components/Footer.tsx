@@ -1,86 +1,132 @@
 import Link from 'next/link';
-// Note: If you get an errror on these icons, run: npm install react-icons
-import { FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram, FaGlobe } from 'react-icons/fa';
+import Image from 'next/image';
+import { FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram } from 'react-icons/fa';
 
 const Footer = () => {
     return (
-        <footer className="bg-[#0B1221] text-white pt-16 pb-8 px-6 md:px-20 font-sans">
-            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
+        <footer className="bg-gray-950 text-white pt-16 pb-8">
+            <div className="max-w-7xl mx-auto px-6 md:px-12">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-12 pb-12 border-b border-white/[0.07]">
 
-                {/* Column 1: Brand & Socials */}
-                <div className="space-y-6">
-                    <h2 className="text-xl font-bold tracking-tight">MyStartup</h2>
-                    <p className="text-gray-400 text-sm leading-relaxed">
-                        Empowering entrepreneurs to build successful, sustainable businesses through expert guidance and proven strategies.
-                    </p>
-                    <div className="flex gap-4">
-                        <Link  href="#" className="p-2 border border-gray-700 rounded-md hover:bg-white hover:text-black transition-all">
-                        <FaFacebookF size={14}  />
-                        </Link>
-                        <Link href="#" className="p-2 border border-gray-700 rounded-md hover:bg-white hover:text-black transition-all">
-                        <FaTwitter size={14}  />
-                        </Link>
-                        <Link href="#" className="p-2 border border-gray-700 rounded-md hover:bg-white hover:text-black transition-all">
-                        <FaLinkedinIn size={14} />
-                        </Link>
-                        <Link href="#" className="p-2 border border-gray-700 rounded md hover:bg-white hover:text-black transition-all">
-                        <FaInstagram size={14} />
-                        </Link>
-                        <Link href="#" className="p-2 border border-gray-700 rounded md hover:bg-white hover:text-black transition-all">
-                        <FaGlobe size={14} />
-                        </Link>
+                    {/* Brand */}
+                    <div className="space-y-5 md:col-span-1">
+                        <div className="flex items-center gap-2.5">
+                            <Image
+                                src="/images/1001224211.png"
+                                alt="O'Gad Impact Group"
+                                width={32}
+                                height={32}
+                                className="w-8 h-8 rounded-lg flex-shrink-0"
+                                unoptimized
+                            />
+                            <span className="text-[13px] font-bold text-white" style={{ fontFamily: 'League Spartan, sans-serif' }}>
+                                THE O'GAD <span className="font-light opacity-70">IMPACT GROUP</span>
+                            </span>
+                        </div>
+                        <p className="text-gray-400 text-sm leading-relaxed" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                            Empowering founders, institutions, and enterprises to build sustainable businesses and achieve extraordinary growth across Africa.
+                        </p>
+                        <div className="flex gap-2">
+                            {[
+                                { Icon: FaFacebookF, href: '#' },
+                                { Icon: FaTwitter, href: '#' },
+                                { Icon: FaLinkedinIn, href: '#' },
+                                { Icon: FaInstagram, href: '#' },
+                            ].map(({ Icon, href }, idx) => (
+                                <Link
+                                    key={idx}
+                                    href={href}
+                                    className="w-8 h-8 border border-white/[0.1] rounded-lg flex items-center justify-center text-gray-500 hover:text-white hover:border-white/30 transition-all"
+                                >
+                                    <Icon size={12} />
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Services */}
+                    <div>
+                        <h3 className="text-[11px] font-bold tracking-[0.2em] uppercase text-white/50 mb-5" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                            Services
+                        </h3>
+                        <ul className="space-y-3">
+                            {[
+                                { label: 'Business & Strategy', href: '/services/business-strategy' },
+                                { label: 'Technology & Digital', href: '/services/technology' },
+                                { label: 'Legal & Structuring', href: '/services/legal' },
+                                { label: 'Marketing & Growth', href: '/services/marketing' },
+                                { label: 'Scaling & Expansion', href: '/services/scaling' },
+                            ].map((item, idx) => (
+                                <li key={idx}>
+                                    <Link href={item.href} className="text-sm text-gray-400 hover:text-white transition-colors" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                                        {item.label}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    {/* Company */}
+                    <div>
+                        <h3 className="text-[11px] font-bold tracking-[0.2em] uppercase text-white/50 mb-5" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                            Company
+                        </h3>
+                        <ul className="space-y-3">
+                            {[
+                                { label: 'About Us', href: '/#our-company' },
+                                { label: 'Our Programs', href: '/programs' },
+                                { label: 'Case Studies', href: '#' },
+                                { label: 'Blog', href: '#' },
+                                { label: 'Careers', href: '#' },
+                                { label: 'Contact', href: '/#get-in-touch' },
+                            ].map((item, idx) => (
+                                <li key={idx}>
+                                    <Link href={item.href} className="text-sm text-gray-400 hover:text-white transition-colors" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                                        {item.label}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    {/* Legal */}
+                    <div>
+                        <h3 className="text-[11px] font-bold tracking-[0.2em] uppercase text-white/50 mb-5" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                            Legal
+                        </h3>
+                        <ul className="space-y-3">
+                            {[
+                                { label: 'Privacy Policy', href: '#' },
+                                { label: 'Terms of Service', href: '#' },
+                                { label: 'Cookie Policy', href: '#' },
+                                { label: 'Disclaimer', href: '#' },
+                                { label: 'Refund Policy', href: '#' },
+                            ].map((item, idx) => (
+                                <li key={idx}>
+                                    <Link href={item.href} className="text-sm text-gray-400 hover:text-white transition-colors" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                                        {item.label}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
                     </div>
                 </div>
 
-                {/* Column 2: Service */}
-                <div>
-                    <h3 className="Font-semibold mb-6 text-sm uppercase tracking-wider">Services</h3>
-                    <ul className="space-y-4 text-gray-400 text-sm">
-                        <li><Link href="/services/business-strategy" className="hover:text-white">Business & Strategy Consultancy</Link></li>
-                        <li><Link href="/services/technology" className="hover:text-white">Technology & Digital Transformation</Link></li>
-                        <li><Link href="/services/legal" className="hover:text-white">Legal & Business Structuring</Link></li>
-                        <li><Link href="/services/marketing" className="hover:text-white">Marketing, Sales & Growth Advisory</Link></li>
-                        <li><Link href="/services/scaling" className="hover:text-white">Scaling & Expansion Support</Link></li>
-                    </ul>
+                {/* Bottom bar */}
+                <div className="pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                    <p className="text-[11px] text-gray-600 uppercase tracking-widest" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                        © {new Date().getFullYear()} The O'GAD Impact Group. All rights reserved.
+                    </p>
+                    <div className="flex items-center gap-6">
+                        {['Privacy', 'Terms', 'Sitemap'].map((item, idx) => (
+                            <Link key={idx} href="#" className="text-[11px] text-gray-600 hover:text-white uppercase tracking-widest transition-colors" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                                {item}
+                            </Link>
+                        ))}
+                    </div>
                 </div>
-                {/* Column 3: Company */}
-                <div>
-                    <h3 className="font-semibold mb-6 text-sm uppercase tracking wider">Company</h3>
-                    <ul className="space-y-4 text-gray-400 text-sm">
-                        <li><Link href="#" className="hover:text-white">About Us</Link></li>
-                        <li><Link href="#" className="hover:text-white">Case Studies</Link></li>
-                        <li><Link href="#" className="hover:text-white">Blog</Link></li>
-                        <li><Link href="#" className="hover:text-white">Careers</Link></li>
-                        <li><Link href="#" className="hover:text-white">Contact</Link></li>
-                        <li><Link href="#" className="hover:text-white">Partners</Link></li>
-                        </ul>
-                </div>
-
-                {/* Column 4: Legal */}
-                 <div>
-                    <h3 className="font-semibold mb-6 text-sm uppercase tracking-wider">Legal</h3>
-                    <ul className="space-y-4 text-gray-400 text-sm">
-                        <li><Link href="#" className="hover:text-white">Privacy Policy</Link></li>
-                        <li><Link href="#" className="hover:text-white">Terms of Services</Link></li>
-                        <li><Link href="#" className="hover:text-white">Cookie Policy</Link></li>
-                        <li><Link href="#" className="hover:text-white">Disclamer</Link></li>
-                        <li><Link href="#" className="hover:text-white">Refund Policy</Link></li>
-                        <li><Link href="#" className="hover:text-white">Accessibilty</Link></li>
-                    </ul>
-                 </div>
-                 </div>
-
-                 {/* Bottom Copyright Section */}
-                 <div className="border-t border-gray-800 mt-1 pt-8 flex flex-col md:row justify-between items-center text-[10px] text-gray-500 uppercase tracking-widest">
-                    <p> © 2026 THE O'GAD IMPACT GROUP.All rights reserved </p>
-                    <div className="flex gap-6 mt-4 md:mt-0">
-                        <Link href="#" className="hover:text-white">Privacy</Link>
-                        <Link href="#" className="hover:text-white">Terms</Link>
-                        <Link href="#" className="hover:text-white">Sitemap</Link>
-                        </div>
-                         </div>
+            </div>
         </footer>
-
     );
 };
 

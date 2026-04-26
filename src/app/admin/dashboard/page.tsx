@@ -24,6 +24,7 @@ interface BookingRequest {
 export default function AdminDashboard() {
     const [requests, setRequests] = useState<BookingRequest[]>([]);
     const [loading, setLoading] = useState(true);
+    const [calendlyKey, setCalendlyKey] = useState(0);
 
     // Modal State
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -43,11 +44,22 @@ export default function AdminDashboard() {
             console.error('Error fetching admin requests:', error);
         } finally {
             setLoading(false);
+            setCalendlyKey(prev => prev + 1);
         }
     };
 
     useEffect(() => {
         fetchRequests();
+
+        // Real-time subscription — auto-refresh when any booking is inserted or updated
+        const channel = supabase
+            .channel('booking_requests_admin')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'booking_requests' }, () => {
+                fetchRequests();
+            })
+            .subscribe();
+
+        return () => { supabase.removeChannel(channel); };
     }, []);
 
     const handleRowClick = (booking: BookingRequest) => {
@@ -59,6 +71,7 @@ export default function AdminDashboard() {
         switch (status.toLowerCase()) {
             case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
             case 'contacted': return 'bg-blue-100 text-blue-800 border-blue-200';
+            case 'scheduled': return 'bg-purple-100 text-purple-800 border-purple-200';
             case 'approved': return 'bg-green-100 text-green-800 border-green-200';
             case 'rejected': return 'bg-red-100 text-red-800 border-red-200';
             case 'resolved': return 'bg-gray-100 text-gray-800 border-gray-200';
@@ -125,6 +138,18 @@ export default function AdminDashboard() {
                             </div>
                         </div>
                     </div>
+
+                    <div className="bg-white/80 backdrop-blur-md rounded-xl shadow-lg border border-white/40 p-5 transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Scheduled</p>
+                                <p className="text-3xl font-bold text-purple-600 mt-1">{requests.filter(r => r.status === 'scheduled').length}</p>
+                            </div>
+                            <div className="w-12 h-12 bg-purple-100/50 rounded-full flex items-center justify-center text-purple-600">
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -185,9 +210,9 @@ export default function AdminDashboard() {
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                         {request.scheduled_date ? (
-                                                            <div className="text-gray-900 font-medium whitespace-nowrap text-xs bg-blue-50 px-2.5 py-1.5 flex items-center gap-1.5 w-max rounded-md text-[#306CEC] border border-blue-100 shadow-sm">
+                                                            <div className="whitespace-nowrap text-xs bg-purple-50 px-2.5 py-1.5 flex items-center gap-1.5 w-max rounded-md text-purple-700 border border-purple-200 shadow-sm font-medium">
                                                                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                                                                {new Date(request.scheduled_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                                                                {new Date(request.scheduled_date).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })}
                                                             </div>
                                                         ) : (
                                                             <span className="text-gray-400 italic text-xs flex items-center gap-1">
@@ -227,6 +252,7 @@ export default function AdminDashboard() {
                                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#306CEC]"></div>
                                 </div>
                                 <iframe
+                                    key={calendlyKey}
                                     src="https://calendly.com/o-maxwellgad"
                                     width="100%"
                                     height="100%"
