@@ -64,8 +64,6 @@ const services = [
       ),
       features: ['Expansion strategy', 'Market entry planning', 'Operational scaling', 'Team & leadership scaling'],
     },
-  ];
-
 ];
 
 const stats = [
