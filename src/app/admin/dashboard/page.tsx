@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabaseClient';
+import { getStatusColor, formatService } from '@/lib/bookingUtils';
 import AdminBookingModal from '@/components/AdminBookingModal';
 
 interface BookingRequest {
@@ -24,7 +25,6 @@ interface BookingRequest {
 export default function AdminDashboard() {
     const [requests, setRequests] = useState<BookingRequest[]>([]);
     const [loading, setLoading] = useState(true);
-    const [calendlyKey, setCalendlyKey] = useState(0);
 
     // Modal State
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -44,7 +44,6 @@ export default function AdminDashboard() {
             console.error('Error fetching admin requests:', error);
         } finally {
             setLoading(false);
-            setCalendlyKey(prev => prev + 1);
         }
     };
 
@@ -67,21 +66,6 @@ export default function AdminDashboard() {
         setIsModalOpen(true);
     };
 
-    const getStatusColor = (status: string) => {
-        switch (status.toLowerCase()) {
-            case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-            case 'contacted': return 'bg-blue-100 text-blue-800 border-blue-200';
-            case 'scheduled': return 'bg-purple-100 text-purple-800 border-purple-200';
-            case 'approved': return 'bg-green-100 text-green-800 border-green-200';
-            case 'rejected': return 'bg-red-100 text-red-800 border-red-200';
-            case 'resolved': return 'bg-gray-100 text-gray-800 border-gray-200';
-            default: return 'bg-gray-100 text-gray-800 border-gray-200';
-        }
-    };
-
-    const formatService = (service: string) => {
-        return service.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-    };
 
     return (
         <div className="min-h-screen bg-gray-50/50 font-body pb-20">
@@ -152,8 +136,7 @@ export default function AdminDashboard() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div className="lg:col-span-2 animate-slideInUp" style={{ animationDelay: '0.4s', opacity: 0, animation: 'slideInUp 0.8s ease-out 0.4s forwards' }}>
+                <div className="animate-slideInUp" style={{ animationDelay: '0.4s', opacity: 0, animation: 'slideInUp 0.8s ease-out 0.4s forwards' }}>
                         <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden mb-8">
                             <div className="px-6 py-5 border-b border-gray-100 bg-white/50 backdrop-blur-sm flex justify-between items-center">
                                 <h2 className="text-lg font-bold text-gray-900 font-heading">Recent Requests</h2>
@@ -214,6 +197,11 @@ export default function AdminDashboard() {
                                                                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                                                                 {new Date(request.scheduled_date).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })}
                                                             </div>
+                                                        ) : request.status === 'scheduled' ? (
+                                                            <span className="whitespace-nowrap text-xs bg-purple-50 px-2.5 py-1.5 flex items-center gap-1.5 w-max rounded-md text-purple-700 border border-purple-200 shadow-sm font-medium">
+                                                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                                                                Calendly Confirmed
+                                                            </span>
                                                         ) : (
                                                             <span className="text-gray-400 italic text-xs flex items-center gap-1">
                                                                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -234,36 +222,6 @@ export default function AdminDashboard() {
                             </div>
                         </div>
                     </div>
-
-                    {/* Calendly Sidebar */}
-                    <div className="lg:col-span-1 animate-slideInUp" style={{ animationDelay: '0.6s', opacity: 0, animation: 'slideInUp 0.8s ease-out 0.6s forwards' }}>
-                        <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden sticky top-24">
-                            <div className="px-6 py-5 border-b border-gray-100 bg-white/50 backdrop-blur-sm">
-                                <h2 className="text-lg font-bold text-gray-900 font-heading flex items-center gap-2">
-                                    <div className="p-1.5 bg-blue-100 rounded-md text-[#306CEC]">
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                                    </div>
-                                    Master Calendar
-                                </h2>
-                            </div>
-                            <div className="h-[600px] w-full bg-gray-50/50 relative">
-                                {/* Loading skeleton for iframe */}
-                                <div className="absolute inset-0 flex items-center justify-center -z-10">
-                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#306CEC]"></div>
-                                </div>
-                                <iframe
-                                    key={calendlyKey}
-                                    src="https://calendly.com/o-maxwellgad"
-                                    width="100%"
-                                    height="100%"
-                                    frameBorder="0"
-                                    className="w-full h-full p-2 bg-transparent"
-                                    title="Calendly Scheduling"
-                                ></iframe>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
             </div>
 

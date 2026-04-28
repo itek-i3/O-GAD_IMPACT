@@ -15,18 +15,18 @@ export default function AdminLayout({
 
     useEffect(() => {
         async function verifyAdmin() {
-            const { data: { user } } = await supabase.auth.getUser();
+            const { data: { session } } = await supabase.auth.getSession();
 
-            if (!user) {
+            if (!session?.user) {
                 router.push('/auth/login');
                 return;
             }
 
-            const adminStatus = await checkIsAdmin(user.id);
+            const adminStatus = await checkIsAdmin(session.user.id);
             setIsAdmin(adminStatus);
 
             if (!adminStatus) {
-                router.push('/dashboard'); // Kick regular users to their own dash
+                router.push('/dashboard');
             }
         }
 

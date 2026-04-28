@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { CALENDLY_URL } from '@/lib/bookingUtils';
+import type { User } from '@supabase/supabase-js';
 
 interface BookingModalProps {
     isOpen: boolean;
@@ -12,7 +14,7 @@ interface BookingModalProps {
 export default function BookingModal({ isOpen, onClose, defaultService = '' }: BookingModalProps) {
     const [step, setStep] = useState<'form' | 'calendly' | 'success'>('form');
     const [error, setError] = useState<string | null>(null);
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<User | null>(null);
     const [loadingAuth, setLoadingAuth] = useState(true);
     const savedFormData = useRef<any>(null);
 
@@ -134,7 +136,7 @@ export default function BookingModal({ isOpen, onClose, defaultService = '' }: B
         setStep('calendly');
     };
 
-    const calendlyUrl = `https://calendly.com/o-maxwellgad?hide_gdpr_banner=1&primary_color=306CEC&name=${encodeURIComponent(formData.firstName + ' ' + formData.lastName)}&email=${encodeURIComponent(formData.email)}`;
+    const calendlyUrl = `${CALENDLY_URL}?hide_gdpr_banner=1&primary_color=306CEC&name=${encodeURIComponent(formData.firstName + ' ' + formData.lastName)}&email=${encodeURIComponent(formData.email)}`;
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">

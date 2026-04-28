@@ -23,18 +23,8 @@ function useInView(threshold = 0.12) {
 function anim(inView: boolean, delay = 0): React.CSSProperties {
   return inView ? { animation: `slideInUp 0.55s ease-out ${delay}s both` } : { opacity: 0 };
 }
-function fadeAnim(inView: boolean, delay = 0): React.CSSProperties {
-  return inView ? { animation: `fadeIn 0.6s ease-out ${delay}s both` } : { opacity: 0 };
-}
 
-export default function AboutSection() {
-
-  const [hoveredService, setHoveredService] = useState<number | null>(null);
-  const introSection = useInView();
-  const servicesSection = useInView();
-  const processSection = useInView();
-
-  const services = [
+const services = [
     {
       title: 'Business & Strategy Consultancy',
       desc: 'We help organizations define clarity, direction, and execution plans that deliver real results.',
@@ -85,22 +75,29 @@ export default function AboutSection() {
         </svg>
       )
     }
-  ];
+];
 
-  const steps = [
-    { number: '01', title: 'Diagnose', desc: 'We assess the real problem, not just the symptoms.' },
-    { number: '02', title: 'Design', desc: 'We co-create solutions tailored to context and capacity.' },
-    { number: '03', title: 'Build', desc: 'We implement the systems, structures, and tools.' },
-    { number: '04', title: 'Execute', desc: 'We support rollout, adoption, and optimization.' },
-    { number: '05', title: 'Scale', desc: 'We prepare organizations for sustainable growth.' }
-  ];
+const steps = [
+  { number: '01', title: 'Diagnose', desc: 'We assess the real problem, not just the symptoms.' },
+  { number: '02', title: 'Design', desc: 'We co-create solutions tailored to context and capacity.' },
+  { number: '03', title: 'Build', desc: 'We implement the systems, structures, and tools.' },
+  { number: '04', title: 'Execute', desc: 'We support rollout, adoption, and optimization.' },
+  { number: '05', title: 'Scale', desc: 'We prepare organizations for sustainable growth.' }
+];
 
-  const stats = [
-    { number: '200+', label: 'Clients Served' },
-    { number: '10+', label: 'Years Experience' },
-    { number: '5', label: 'Service Areas' },
-    { number: 'Pan-Africa', label: 'Reach & Impact' }
-  ];
+const stats = [
+  { number: '200+', label: 'Clients Served' },
+  { number: '10+', label: 'Years Experience' },
+  { number: '5', label: 'Service Areas' },
+  { number: 'Pan-Africa', label: 'Reach & Impact' }
+];
+
+export default function AboutSection() {
+
+  const [hoveredService, setHoveredService] = useState<number | null>(null);
+  const introSection = useInView();
+  const servicesSection = useInView();
+  const processSection = useInView();
 
   return (
     <section id='our-company' className='bg-white'>

@@ -15,54 +15,54 @@ interface HeroSlide {
     objectFit?: 'cover' | 'contain';
 }
 
+const slides: HeroSlide[] = [
+    {
+        id: 1,
+        title: 'We champion the bold to achieve the extraordinary.',
+        subtitle: 'Transforming ambition into tangible results through strategic consulting.',
+        image: '/images/hero_images/DSC_2565.jpg',
+        category: 'Business Strategy',
+        href: '/services/business-strategy'
+    },
+    {
+        id: 2,
+        title: 'Building sustainable business growth across your organization.',
+        subtitle: 'Creating future-ready organizations across Africa and beyond.',
+        image: '/images/hero_images/DSC_2566.jpg',
+        category: 'Scale & Growth',
+        href: '/services/scaling'
+    },
+    {
+        id: 3,
+        title: 'From idea to execution with precision and excellence.',
+        subtitle: 'Moving your vision from concept to market leadership.',
+        image: '/images/hero_images/Consult1.jpg',
+        category: 'Technology',
+        href: '/services/technology'
+    },
+    {
+        id: 4,
+        title: 'Strategic growth for your business objectives and goals.',
+        subtitle: 'Unlocking potential through innovative marketing strategies.',
+        image: '/images/hero_images/Consult2.jpg',
+        category: 'Marketing & Growth',
+        href: '/services/marketing'
+    },
+    {
+        id: 5,
+        title: 'Legal expertise to guide your business forward.',
+        subtitle: 'Navigating complex legal landscapes with strategic counsel.',
+        image: '/images/hero_images/Consult3.jpg',
+        category: 'Law',
+        href: '/services/legal',
+        objectFit: 'cover',
+        objectPosition: '50% 40%'
+    }
+];
+
 export default function HeroSection() {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [isAutoPlay, setIsAutoPlay] = useState(true);
-
-    const slides: HeroSlide[] = [
-        {
-            id: 1,
-            title: 'We champion the bold to achieve the extraordinary.',
-            subtitle: 'Transforming ambition into tangible results through strategic consulting.',
-            image: '/images/hero_images/DSC_2565.jpg',
-            category: 'Business Strategy',
-            href: '/services/business-strategy'
-        },
-        {
-            id: 2,
-            title: 'Building sustainable business growth across your organization.',
-            subtitle: 'Creating future-ready organizations across Africa and beyond.',
-            image: '/images/hero_images/DSC_2566.jpg',
-            category: 'Scale & Growth',
-            href: '/services/scaling'
-        },
-        {
-            id: 3,
-            title: 'From idea to execution with precision and excellence.',
-            subtitle: 'Moving your vision from concept to market leadership.',
-            image: '/images/hero_images/Consult1.jpg',
-            category: 'Technology',
-            href: '/services/technology'
-        },
-        {
-            id: 4,
-            title: 'Strategic growth for your business objectives and goals.',
-            subtitle: 'Unlocking potential through innovative marketing strategies.',
-            image: '/images/hero_images/Consult2.jpg',
-            category: 'Marketing & Growth',
-            href: '/services/marketing'
-        },
-        {
-            id: 5,
-            title: 'Legal expertise to guide your business forward.',
-            subtitle: 'Navigating complex legal landscapes with strategic counsel.',
-            image: '/images/hero_images/Consult3.jpg',
-            category: 'Law',
-            href: '/services/legal',
-            objectFit: 'cover',
-            objectPosition: '50% 40%'
-        }
-    ];
 
     useEffect(() => {
         if (!isAutoPlay) return;
@@ -70,7 +70,7 @@ export default function HeroSection() {
             setCurrentSlide((prev) => (prev + 1) % slides.length);
         }, 5000);
         return () => clearInterval(interval);
-    }, [isAutoPlay, slides.length]);
+    }, [isAutoPlay]);
 
     const goToSlide = (index: number) => { setCurrentSlide(index); setIsAutoPlay(false); };
     const nextSlide = () => { setCurrentSlide((prev) => (prev + 1) % slides.length); setIsAutoPlay(false); };

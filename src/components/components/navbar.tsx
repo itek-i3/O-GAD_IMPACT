@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from "react";
+import type { User } from "@supabase/supabase-js";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -12,7 +13,7 @@ export default function Navbar() {
     const [activeHash, setActiveHash] = useState("");
     const [isServicesOpen, setIsServicesOpen] = useState(false);
     const [isMobileServicesOpen, setIsMobileServicesOpen] = useState(false);
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<User | null>(null);
     const [isAdmin, setIsAdmin] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const pathname = usePathname() || "";
@@ -22,7 +23,10 @@ export default function Navbar() {
 
     const handleSignOut = async () => {
         await supabase.auth.signOut();
+        setUser(null);
+        setIsAdmin(false);
         router.push('/');
+        router.refresh();
     };
 
     const openServices = () => {
@@ -255,12 +259,6 @@ export default function Navbar() {
                     <div className="flex items-center gap-2">
                         {user ? (
                             <div className="hidden md:flex items-center gap-2">
-                                <button
-                                    onClick={handleSignOut}
-                                    className="text-white/50 hover:text-white text-[13px] font-medium transition-colors px-3 py-2"
-                                >
-                                    Sign Out
-                                </button>
                                 <Link
                                     href={isAdmin ? "/admin/dashboard" : "/dashboard"}
                                     className="text-white px-4 py-2 rounded-lg text-[13px] font-semibold transition-all hover:opacity-90"
@@ -268,6 +266,15 @@ export default function Navbar() {
                                 >
                                     {isAdmin ? "Admin Portal" : "Dashboard"}
                                 </Link>
+                                <button
+                                    onClick={handleSignOut}
+                                    className="flex items-center gap-1.5 text-white/70 hover:text-white text-[13px] font-semibold px-3.5 py-2 rounded-lg border border-white/20 hover:border-white/40 hover:bg-white/10 transition-all"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-4 h-4">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+                                    </svg>
+                                    Sign Out
+                                </button>
                             </div>
                         ) : (
                             <Link
@@ -368,8 +375,11 @@ export default function Navbar() {
                                     </Link>
                                     <button
                                         onClick={() => { handleSignOut(); setIsOpen(false); }}
-                                        className="flex justify-center w-full text-white/60 hover:text-white px-5 py-2.5 rounded-xl text-[13px] font-semibold border border-white/[0.12] transition-colors"
+                                        className="flex items-center justify-center gap-2 w-full text-white/60 hover:text-white px-5 py-2.5 rounded-xl text-[13px] font-semibold border border-white/[0.12] transition-colors"
                                     >
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-4 h-4">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+                                        </svg>
                                         Sign Out
                                     </button>
                                 </>

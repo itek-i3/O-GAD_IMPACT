@@ -3,10 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 
-export default function ServicesPage() {
-  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
-
-  const services = [
+const services = [
     {
       id: 1,
       title: 'Business & Strategy Consultancy',
@@ -69,19 +66,24 @@ export default function ServicesPage() {
     },
   ];
 
-  const stats = [
-    { value: '150+', label: 'Projects Delivered' },
-    { value: '80+', label: 'Clients Served' },
-    { value: '12+', label: 'Industries Covered' },
-    { value: '98%', label: 'Client Satisfaction' },
-  ];
+];
 
-  const process = [
-    { step: '01', title: 'Discovery', desc: 'We dive deep into your business, industry, and goals to understand the full picture.' },
-    { step: '02', title: 'Strategy', desc: 'We craft a tailored roadmap aligned with your vision and market dynamics.' },
-    { step: '03', title: 'Execution', desc: 'We work alongside your team to implement solutions with precision and agility.' },
-    { step: '04', title: 'Growth', desc: 'We measure results, iterate, and scale what works for sustained impact.' },
-  ];
+const stats = [
+  { value: '150+', label: 'Projects Delivered' },
+  { value: '80+', label: 'Clients Served' },
+  { value: '12+', label: 'Industries Covered' },
+  { value: '98%', label: 'Client Satisfaction' },
+];
+
+const process = [
+  { step: '01', title: 'Discovery', desc: 'We dive deep into your business, industry, and goals to understand the full picture.' },
+  { step: '02', title: 'Strategy', desc: 'We craft a tailored roadmap aligned with your vision and market dynamics.' },
+  { step: '03', title: 'Execution', desc: 'We work alongside your team to implement solutions with precision and agility.' },
+  { step: '04', title: 'Growth', desc: 'We measure results, iterate, and scale what works for sustained impact.' },
+];
+
+export default function ServicesPage() {
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
 
   return (
     <main className='min-h-screen bg-white'>

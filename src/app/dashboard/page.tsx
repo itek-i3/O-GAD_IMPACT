@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabaseClient';
+import { getStatusColor, formatService } from '@/lib/bookingUtils';
+import { checkIsAdmin } from '@/lib/checkAdmin';
 import Link from 'next/link';
 
 interface BookingRequest {
@@ -18,6 +20,7 @@ export default function Dashboard() {
     const [requests, setRequests] = useState<BookingRequest[]>([]);
     const [loading, setLoading] = useState(true);
     const [userName, setUserName] = useState('');
+    const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
         async function fetchDashboardData() {
@@ -31,6 +34,7 @@ export default function Dashboard() {
                 }
 
                 setUserName(user.user_metadata?.first_name || user.email?.split('@')[0] || 'User');
+                setIsAdmin(await checkIsAdmin(user.id));
 
                 const { data: bookingData, error } = await supabase
                     .from('booking_requests')
@@ -50,20 +54,6 @@ export default function Dashboard() {
         fetchDashboardData();
     }, []);
 
-    const getStatusColor = (status: string) => {
-        switch (status.toLowerCase()) {
-            case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-            case 'contacted': return 'bg-blue-100 text-blue-800 border-blue-200';
-            case 'approved': return 'bg-green-100 text-green-800 border-green-200';
-            case 'rejected': return 'bg-red-100 text-red-800 border-red-200';
-            case 'resolved': return 'bg-gray-100 text-gray-800 border-gray-200';
-            default: return 'bg-gray-100 text-gray-800 border-gray-200';
-        }
-    };
-
-    const formatService = (service: string) => {
-        return service.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-    };
 
     if (loading) {
         return (
@@ -110,9 +100,11 @@ export default function Dashboard() {
                             </div>
                             Your Booked Sessions
                         </h2>
-                        <Link href="/services" className="text-sm font-medium text-white hover:bg-blue-700 bg-[#306CEC] px-5 py-2.5 rounded-lg transition-all shadow-sm hover:shadow-md text-center">
-                            Book New Session
-                        </Link>
+                        {!isAdmin && (
+                            <Link href="/services" className="text-sm font-medium text-white hover:bg-blue-700 bg-[#306CEC] px-5 py-2.5 rounded-lg transition-all shadow-sm hover:shadow-md text-center">
+                                Book New Session
+                            </Link>
+                        )}
                     </div>
 
                     {requests.length === 0 ? (

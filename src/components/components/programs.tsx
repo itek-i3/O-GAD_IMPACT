@@ -21,9 +21,6 @@ function useInView(threshold = 0.12) {
 function anim(inView: boolean, delay = 0): React.CSSProperties {
   return inView ? { animation: `slideInUp 0.55s ease-out ${delay}s both` } : { opacity: 0 };
 }
-function fadeAnim(inView: boolean, delay = 0): React.CSSProperties {
-  return inView ? { animation: `fadeIn 0.6s ease-out ${delay}s both` } : { opacity: 0 };
-}
 
 const programs = [
   {

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { getStatusColor } from '@/lib/bookingUtils';
 
 interface BookingRequest {
     id: string;
@@ -87,17 +88,6 @@ export default function AdminBookingModal({ isOpen, onClose, booking, onSave }: 
         }
     };
 
-    const getStatusColor = (s: string) => {
-        switch (s.toLowerCase()) {
-            case 'pending': return 'bg-yellow-100 text-yellow-800';
-            case 'contacted': return 'bg-blue-100 text-blue-800';
-            case 'scheduled': return 'bg-purple-100 text-purple-800';
-            case 'approved': return 'bg-green-100 text-green-800';
-            case 'rejected': return 'bg-red-100 text-red-800';
-            case 'resolved': return 'bg-gray-100 text-gray-800';
-            default: return 'bg-gray-100 text-gray-800';
-        }
-    };
 
     return (
         <>
