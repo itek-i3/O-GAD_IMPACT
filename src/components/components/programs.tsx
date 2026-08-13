@@ -27,7 +27,7 @@ const programs = [
     tag: 'Incubation',
     title: 'Business Incubation Program',
     duration: 'Ongoing Cohorts',
-    desc: 'We support founders from idea to execution — providing structured mentorship, business model validation, legal setup, and early-stage resources to turn concepts into viable, operating businesses. Designed to remove the barriers that stop great ideas from becoming great companies.',
+    desc: 'We support founders from idea to execution — mentorship, business model validation, legal setup, and early-stage resources that turn concepts into real businesses.',
     outcomes: ['Validated Business Model', 'Legal & Structure Setup', 'Mentor-Led Roadmap'],
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7">
@@ -39,7 +39,7 @@ const programs = [
     tag: 'Acceleration',
     title: 'Startup Acceleration Track',
     duration: '12-Week Intensive',
-    desc: 'A high-intensity acceleration program for early-stage ventures ready to scale. Participants receive investor readiness training, strategic growth coaching, access to a pan-African mentor network, and pathways to funding — all within a structured 12-week cohort.',
+    desc: 'A high-intensity program for early-stage ventures ready to scale — investor readiness, growth coaching, a pan-African mentor network, and pathways to funding.',
     outcomes: ['Investor Pitch Ready', 'Growth Strategy', 'Pan-Africa Network'],
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7">
@@ -51,7 +51,7 @@ const programs = [
     tag: 'Decentralization',
     title: 'Decentralized Innovation Hubs',
     duration: 'Continent-Wide',
-    desc: 'We believe world-class entrepreneurship resources should not be locked in a single city. Our decentralization initiative brings incubation support, bootcamps, and strategic programs directly to founders in underserved regions — breaking barriers and building ecosystems everywhere.',
+    desc: 'Entrepreneurship resources shouldn\'t be locked in one city. We bring incubation support, bootcamps, and programs directly to founders in underserved regions.',
     outcomes: ['Local Hub Access', 'Regional Ecosystems', 'Equal Opportunity'],
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7">
@@ -63,7 +63,7 @@ const programs = [
     tag: 'Community',
     title: 'Events, Bootcamps & Meetups',
     duration: 'Year-Round',
-    desc: 'We run targeted workshops, intensive bootcamps, and founder meetups that help innovators learn, connect, and grow. Each event is designed to deliver practical skills and real relationships — not just inspiration.',
+    desc: 'We run workshops, bootcamps, and founder meetups that help innovators learn, connect, and grow — practical skills and real relationships, not just inspiration.',
     outcomes: ['Practical Workshops', 'Founder Community', 'Peer Learning'],
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7">
@@ -78,6 +78,15 @@ const stats = [
   { value: '18+', label: 'Countries Represented' },
   { value: '85%', label: 'Business Survival Rate' },
   { value: '4', label: 'Program Tracks' },
+];
+
+const focusAreas = [
+  'Entrepreneurship ecosystems',
+  'Regional innovation',
+  'Founder communities',
+  'Market access',
+  'Partnerships',
+  'Research and insights',
 ];
 
 export default function ProgramsSection() {
@@ -102,19 +111,23 @@ export default function ProgramsSection() {
                 className="rounded-full flex-shrink-0 shadow-md"
                 unoptimized
               />
-              <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-bold tracking-[0.2em] uppercase" style={{ color: '#306CEC', backgroundColor: 'rgba(48,108,236,0.08)', fontFamily: 'DM Sans, sans-serif' }}>
-                <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: '#306CEC' }} />
-                The Impact360 Initiative
-              </span>
             </div>
             <h2 className="font-bold text-gray-900 leading-[1.05]" style={{ fontFamily: 'League Spartan, sans-serif', fontSize: 'clamp(2.2rem, 5vw, 3.5rem)', ...anim(headerSection.inView, 0.1) }}>
               Decentralizing Innovation <br /><span style={{ color: '#306CEC' }}>Across Africa</span>
             </h2>
           </div>
           <div>
-            <p className="text-[17px] text-gray-600 leading-relaxed mb-6" style={{ fontFamily: 'DM Sans, sans-serif', ...anim(headerSection.inView, 0.15) }}>
-              Impact360 is our pan-African initiative breaking barriers and bringing world-class incubation, acceleration, and entrepreneurship resources to every corner of the continent — empowering founders everywhere to build sustainable, scalable solutions.
+            <p className="text-[17px] text-gray-600 leading-relaxed mb-5" style={{ fontFamily: 'DM Sans, sans-serif', ...anim(headerSection.inView, 0.15) }}>
+              Impact360 is TOIG&apos;s ecosystem development and decentralization platform. It connects entrepreneurs, innovators, and investors across Africa to expand access to opportunity.
             </p>
+            <div className="flex flex-wrap gap-2 mb-6" style={anim(headerSection.inView, 0.18)}>
+              {focusAreas.map((area, i) => (
+                <span key={i} className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-gray-600 px-3 py-1.5 rounded-xl bg-gray-50 border border-gray-100" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                  <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: '#306CEC' }} />
+                  {area}
+                </span>
+              ))}
+            </div>
             <div style={anim(headerSection.inView, 0.22)}>
               <a
                 href="https://www.impact360.africa/"
@@ -132,57 +145,70 @@ export default function ProgramsSection() {
           </div>
         </div>
 
-        {/* ── Program Cards ── */}
+        {/* ── Program Cards — alternating tint/lift + a large faint ghost icon per card ── */}
         <div ref={cardsSection.ref} className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-16">
           {programs.map((program, idx) => (
-            <div
-              key={idx}
-              className="group rounded-3xl p-7 border border-gray-100 hover:border-blue-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col"
-              style={{ backgroundColor: hoveredCard === idx ? '#fafeff' : '#fafafa', ...anim(cardsSection.inView, 0.1 + idx * 0.08) }}
-              onMouseEnter={() => setHoveredCard(idx)}
-              onMouseLeave={() => setHoveredCard(null)}
-            >
-              {/* Top row */}
-              <div className="flex items-start justify-between mb-5">
-                <div className="w-14 h-14 rounded-2xl flex items-center justify-center transition-colors duration-300" style={{ backgroundColor: hoveredCard === idx ? 'rgba(48,108,236,0.12)' : 'rgba(48,108,236,0.07)', color: '#306CEC' }}>
+            <div key={idx} style={anim(cardsSection.inView, 0.1 + idx * 0.08)}>
+              {/* Permanent alternating lift lives on this inner layer — a CSS animation on the outer
+                  element would otherwise override the outer's own transform once slideInUp completes. */}
+              <div
+                className="group relative overflow-hidden rounded-3xl p-7 border border-gray-100 hover:border-blue-100 hover:shadow-xl transition-all duration-300 flex flex-col"
+                style={{
+                  backgroundColor: hoveredCard === idx ? '#fafeff' : (idx % 2 === 1 ? '#f5f9ff' : '#fafafa'),
+                  transform: idx % 2 === 1 ? 'translateY(-14px)' : undefined,
+                }}
+                onMouseEnter={() => setHoveredCard(idx)}
+                onMouseLeave={() => setHoveredCard(null)}
+              >
+                {/* Ghost icon — purely decorative background flourish */}
+                <div className="absolute -right-6 -bottom-6 opacity-[0.06] pointer-events-none select-none [&>svg]:w-44 [&>svg]:h-44" style={{ color: '#306CEC' }}>
                   {program.icon}
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase" style={{ color: '#306CEC', backgroundColor: 'rgba(48,108,236,0.08)', fontFamily: 'DM Sans, sans-serif' }}>
-                    {program.tag}
-                  </span>
-                  <span className="px-2.5 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase bg-gray-100 text-gray-500" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-                    {program.duration}
-                  </span>
+
+                <div className="relative z-10 flex flex-col flex-1">
+                  {/* Top row */}
+                  <div className="flex items-start justify-between mb-5">
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center transition-colors duration-300" style={{ backgroundColor: hoveredCard === idx ? 'rgba(48,108,236,0.12)' : 'rgba(48,108,236,0.07)', color: '#306CEC' }}>
+                      {program.icon}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="px-2.5 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase" style={{ color: '#306CEC', backgroundColor: 'rgba(48,108,236,0.08)', fontFamily: 'DM Sans, sans-serif' }}>
+                        {program.tag}
+                      </span>
+                      <span className="px-2.5 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase bg-gray-100 text-gray-500" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                        {program.duration}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Title + Description */}
+                  <h3 className="text-[20px] font-bold text-gray-900 mb-3 leading-snug" style={{ fontFamily: 'League Spartan, sans-serif' }}>{program.title}</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed flex-1 mb-5" style={{ fontFamily: 'DM Sans, sans-serif' }}>{program.desc}</p>
+
+                  {/* Outcomes */}
+                  <div className="flex flex-wrap gap-2 mb-5">
+                    {program.outcomes.map((outcome, i) => (
+                      <span key={i} className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-gray-600 px-3 py-1.5 rounded-xl bg-white border border-gray-100" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                        <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: '#306CEC' }} />
+                        {outcome}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* CTA */}
+                  <div className="flex items-center gap-1.5 text-[12px] font-bold tracking-widest uppercase transition-colors duration-300 mt-auto" style={{ color: hoveredCard === idx ? '#306CEC' : 'rgba(48,108,236,0.4)', fontFamily: 'DM Sans, sans-serif' }}>
+                    Learn more
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                    </svg>
+                  </div>
                 </div>
-              </div>
-
-              {/* Title + Description */}
-              <h3 className="text-[20px] font-bold text-gray-900 mb-3 leading-snug" style={{ fontFamily: 'League Spartan, sans-serif' }}>{program.title}</h3>
-              <p className="text-gray-600 text-sm leading-relaxed flex-1 mb-5" style={{ fontFamily: 'DM Sans, sans-serif' }}>{program.desc}</p>
-
-              {/* Outcomes */}
-              <div className="flex flex-wrap gap-2 mb-5">
-                {program.outcomes.map((outcome, i) => (
-                  <span key={i} className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-gray-600 px-3 py-1.5 rounded-xl bg-white border border-gray-100" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-                    <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: '#306CEC' }} />
-                    {outcome}
-                  </span>
-                ))}
-              </div>
-
-              {/* CTA */}
-              <div className="flex items-center gap-1.5 text-[12px] font-bold tracking-widest uppercase transition-colors duration-300 mt-auto" style={{ color: hoveredCard === idx ? '#306CEC' : 'rgba(48,108,236,0.4)', fontFamily: 'DM Sans, sans-serif' }}>
-                Learn more
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                </svg>
               </div>
             </div>
           ))}
         </div>
 
-        {/* ── Stats Bar ── */}
+        {/* ── Stats Bar — connected strip, not individual cards ── */}
         <div ref={statsSection.ref} className="grid grid-cols-2 md:grid-cols-4 rounded-3xl overflow-hidden border border-gray-100" style={{ backgroundColor: '#f0f5ff' }}>
           {stats.map((s, i) => (
             <div

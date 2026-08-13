@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { getStatusColor } from '@/lib/bookingUtils';
+import { getStatusColor, formatService } from '@/lib/bookingUtils';
 
 interface BookingRequest {
     id: string;
@@ -135,9 +135,9 @@ export default function AdminBookingModal({ isOpen, onClose, booking, onSave }: 
                             <div className="space-y-4 text-sm">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <span className="block text-gray-500 mb-1">Service Needed</span>
-                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 capitalize">
-                                            {booking.service_requested.replace('-', ' ')}
+                                        <span className="block text-gray-500 mb-1">Agency Needed</span>
+                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                            {formatService(booking.service_requested)}
                                         </span>
                                     </div>
                                     <div>

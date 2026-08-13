@@ -24,7 +24,7 @@ const Footer = () => {
                             </span>
                         </div>
                         <p className="text-gray-400 text-sm leading-relaxed" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-                            Empowering founders, institutions, and enterprises to build sustainable businesses and achieve extraordinary growth across Africa.
+                            A business infrastructure company building the systems, capabilities, and platforms that enable African businesses to start, operate, scale, and compete globally.
                         </p>
                         <div className="flex gap-2">
                             {[
@@ -44,18 +44,19 @@ const Footer = () => {
                         </div>
                     </div>
 
-                    {/* Services */}
+                    {/* Agencies */}
                     <div>
                         <h3 className="text-[11px] font-bold tracking-[0.2em] uppercase text-white/50 mb-5" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-                            Services
+                            Our Agencies
                         </h3>
                         <ul className="space-y-3">
                             {[
-                                { label: 'Business & Strategy', href: '/services/business-strategy' },
-                                { label: 'Technology & Digital', href: '/services/technology' },
-                                { label: 'Legal & Structuring', href: '/services/legal' },
-                                { label: 'Marketing & Growth', href: '/services/marketing' },
-                                { label: 'Scaling & Expansion', href: '/services/scaling' },
+                                { label: 'I3 Plus', href: '/agencies/i3-plus-marketing' },
+                                { label: 'I3X Africa', href: '/agencies/i3x-events' },
+                                { label: 'I3 Launchpad', href: '/agencies/i3-launchpad' },
+                                { label: 'iTek', href: '/agencies/itek' },
+                                { label: 'I3 Studios', href: '/agencies/i3-studios' },
+                                { label: 'Impact360', href: '/agencies/impact360' },
                             ].map((item, idx) => (
                                 <li key={idx}>
                                     <Link href={item.href} className="text-sm text-gray-400 hover:text-white transition-colors" style={{ fontFamily: 'DM Sans, sans-serif' }}>

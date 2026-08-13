@@ -115,17 +115,18 @@ export default function Navbar() {
     const navLinks = [
         { href: "/#hero", label: "Home" },
         { href: "/#our-company", label: "About" },
-        { href: "/services", label: "Services", isDropdown: true },
-        { href: "/#programs", label: "Programs" },
+        { href: "/agencies", label: "Agencies", isDropdown: true },
+        { href: "/members", label: "Members" },
         { href: "/#get-in-touch", label: "Contact" }
     ];
 
     const services = [
-        { title: 'Business & Strategy Consultancy', href: '/services/business-strategy' },
-        { title: 'Technology & Digital Transformation', href: '/services/technology' },
-        { title: 'Legal & Business Structuring', href: '/services/legal' },
-        { title: 'Marketing, Sales & Growth Advisory', href: '/services/marketing' },
-        { title: 'Scaling & Expansion Support', href: '/services/scaling' }
+        { title: 'I3 Plus', href: '/agencies/i3-plus-marketing' },
+        { title: 'I3X Africa', href: '/agencies/i3x-events' },
+        { title: 'I3 Launchpad', href: '/agencies/i3-launchpad' },
+        { title: 'iTek', href: '/agencies/itek' },
+        { title: 'I3 Studios', href: '/agencies/i3-studios' },
+        { title: 'Impact360', href: '/agencies/impact360' }
     ];
 
     const handleNavClick = (href: string) => {
@@ -150,7 +151,7 @@ export default function Navbar() {
             if (targetHash === "#hero") return pathname === "/" && (activeHash === "" || activeHash === "#hero");
             return pathname === "/" && activeHash === targetHash;
         }
-        if (href === "/services") return pathname.startsWith("/services");
+        if (href === "/agencies") return pathname.startsWith("/agencies");
         return pathname === href;
     };
 
@@ -196,7 +197,7 @@ export default function Navbar() {
                                     <Link
                                         href={link.href}
                                         className={`px-3.5 py-2 rounded-lg text-[13px] font-medium transition-all flex items-center gap-1.5 ${
-                                            pathname.startsWith('/services')
+                                            pathname.startsWith('/agencies')
                                                 ? 'text-white bg-white/10'
                                                 : 'text-white/60 hover:text-white hover:bg-white/[0.07]'
                                         }`}
@@ -257,14 +258,14 @@ export default function Navbar() {
 
                     {/* CTA + Mobile Toggle */}
                     <div className="flex items-center gap-2">
-                        {user ? (
+                        {isAdmin && (
                             <div className="hidden md:flex items-center gap-2">
                                 <Link
-                                    href={isAdmin ? "/admin/dashboard" : "/dashboard"}
+                                    href="/admin/dashboard"
                                     className="text-white px-4 py-2 rounded-lg text-[13px] font-semibold transition-all hover:opacity-90"
                                     style={{ backgroundColor: '#306CEC' }}
                                 >
-                                    {isAdmin ? "Admin Portal" : "Dashboard"}
+                                    Admin Portal
                                 </Link>
                                 <button
                                     onClick={handleSignOut}
@@ -276,14 +277,6 @@ export default function Navbar() {
                                     Sign Out
                                 </button>
                             </div>
-                        ) : (
-                            <Link
-                                href="/auth/login"
-                                className="hidden md:flex items-center text-white px-4 py-2 rounded-lg text-[13px] font-semibold transition-all hover:opacity-90"
-                                style={{ backgroundColor: '#306CEC' }}
-                            >
-                                Log In
-                            </Link>
                         )}
 
                         <button
@@ -362,38 +355,27 @@ export default function Navbar() {
                                 </Link>
                             )
                         )}
-                        <div className="pt-3 mt-1 border-t border-white/[0.08] space-y-2 px-1 pb-1">
-                            {user ? (
-                                <>
-                                    <Link
-                                        href={isAdmin ? "/admin/dashboard" : "/dashboard"}
-                                        onClick={() => setIsOpen(false)}
-                                        className="flex justify-center w-full text-white px-5 py-2.5 rounded-xl text-[13px] font-semibold"
-                                        style={{ backgroundColor: '#306CEC' }}
-                                    >
-                                        {isAdmin ? "Admin Portal" : "Dashboard"}
-                                    </Link>
-                                    <button
-                                        onClick={() => { handleSignOut(); setIsOpen(false); }}
-                                        className="flex items-center justify-center gap-2 w-full text-white/60 hover:text-white px-5 py-2.5 rounded-xl text-[13px] font-semibold border border-white/[0.12] transition-colors"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-4 h-4">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
-                                        </svg>
-                                        Sign Out
-                                    </button>
-                                </>
-                            ) : (
+                        {isAdmin && (
+                            <div className="pt-3 mt-1 border-t border-white/[0.08] space-y-2 px-1 pb-1">
                                 <Link
-                                    href="/auth/login"
+                                    href="/admin/dashboard"
                                     onClick={() => setIsOpen(false)}
                                     className="flex justify-center w-full text-white px-5 py-2.5 rounded-xl text-[13px] font-semibold"
                                     style={{ backgroundColor: '#306CEC' }}
                                 >
-                                    Log In
+                                    Admin Portal
                                 </Link>
-                            )}
-                        </div>
+                                <button
+                                    onClick={() => { handleSignOut(); setIsOpen(false); }}
+                                    className="flex items-center justify-center gap-2 w-full text-white/60 hover:text-white px-5 py-2.5 rounded-xl text-[13px] font-semibold border border-white/[0.12] transition-colors"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-4 h-4">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+                                    </svg>
+                                    Sign Out
+                                </button>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { checkIsAdmin } from '@/lib/checkAdmin';
 
 export default function Login() {
     const router = useRouter();
@@ -20,12 +21,13 @@ export default function Login() {
         setIsLoading(true);
         setError(null);
         try {
-            const { error: signInError } = await supabase.auth.signInWithPassword({
+            const { data, error: signInError } = await supabase.auth.signInWithPassword({
                 email: formData.email,
                 password: formData.password,
             });
             if (signInError) throw signInError;
-            router.push('/dashboard');
+            const isAdmin = data.user ? await checkIsAdmin(data.user.id) : false;
+            router.push(isAdmin ? '/admin/dashboard' : '/');
         } catch (err: any) {
             setError(err.message || 'Invalid login credentials.');
         } finally {
@@ -63,13 +65,13 @@ export default function Login() {
                 {/* Mid content */}
                 <div className="relative z-10">
                     <p className="text-[11px] font-bold tracking-[0.25em] uppercase mb-6" style={{ color: '#306CEC', fontFamily: 'DM Sans, sans-serif' }}>
-                        Client Portal
+                        Admin Portal
                     </p>
                     <h2 className="font-bold text-white leading-[1.1] mb-6" style={{ fontFamily: 'League Spartan, sans-serif', fontSize: 'clamp(2rem, 3.5vw, 3rem)' }}>
-                        Manage your consultations in one place.
+                        Manage every booking request in one place.
                     </h2>
                     <p className="text-gray-400 leading-relaxed text-[15px]" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-                        Track your sessions, review project progress, and stay aligned with our team from your personal dashboard.
+                        Sign in to review incoming consultations and keep the team aligned across every agency.
                     </p>
                 </div>
 
@@ -101,10 +103,7 @@ export default function Login() {
                         Welcome back
                     </h1>
                     <p className="text-sm text-gray-500 mb-8" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-                        Don't have an account?{' '}
-                        <Link href="/auth/signup" className="font-semibold transition-colors" style={{ color: '#306CEC' }}>
-                            Sign up
-                        </Link>
+                        Admin sign-in for The O'GAD Impact Group.
                     </p>
 
                     {error && (

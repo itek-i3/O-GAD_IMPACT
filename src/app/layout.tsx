@@ -27,8 +27,8 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "The O'GAD Impact Group",
-  description: "Multidisciplinary consultancy firm helping founders, institutions, and enterprises across Africa move from ideas to execution and from growth to scale.",
+  title: "The O'GAD Impact Group (TOIG)",
+  description: "TOIG is a business infrastructure company building the systems, capabilities, and platforms that enable African businesses to start, operate, scale, and compete globally.",
 };
 
 export default function RootLayout({

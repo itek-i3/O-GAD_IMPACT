@@ -18,43 +18,43 @@ interface HeroSlide {
 const slides: HeroSlide[] = [
     {
         id: 1,
-        title: 'We champion the bold to achieve the extraordinary.',
-        subtitle: 'Transforming ambition into tangible results through strategic consulting.',
-        image: '/images/hero_images/DSC_2565.jpg',
-        category: 'Business Strategy',
-        href: '/services/business-strategy'
+        title: 'The infrastructure African businesses run on.',
+        subtitle: 'We build the systems businesses need to start, scale, and compete globally.',
+        image: '/images/DSC_2608.jpg',
+        category: 'The O’GAD Impact Group',
+        href: '/agencies'
     },
     {
         id: 2,
-        title: 'Building sustainable business growth across your organization.',
-        subtitle: 'Creating future-ready organizations across Africa and beyond.',
-        image: '/images/hero_images/DSC_2566.jpg',
-        category: 'Scale & Growth',
-        href: '/services/scaling'
+        title: 'From idea to execution, built to scale.',
+        subtitle: 'I3 Launchpad moves startups from diagnosis to a business that runs.',
+        image: '/photo/S43A3804.jpg',
+        category: 'I3 Launchpad',
+        href: '/agencies/i3-launchpad'
     },
     {
         id: 3,
-        title: 'From idea to execution with precision and excellence.',
-        subtitle: 'Moving your vision from concept to market leadership.',
-        image: '/images/hero_images/Consult1.jpg',
-        category: 'Technology',
-        href: '/services/technology'
+        title: 'Technology built as infrastructure, not an afterthought.',
+        subtitle: 'iTek builds the software and AI systems that scale your operations.',
+        image: '/images/_DSC2948.jpg',
+        category: 'iTek',
+        href: '/agencies/itek'
     },
     {
         id: 4,
-        title: 'Strategic growth for your business objectives and goals.',
-        subtitle: 'Unlocking potential through innovative marketing strategies.',
-        image: '/images/hero_images/Consult2.jpg',
-        category: 'Marketing & Growth',
-        href: '/services/marketing'
+        title: 'Brands and growth strategies that convert.',
+        subtitle: 'I3 Plus builds the positioning and demand engines that drive revenue.',
+        image: '/photo/S43A9196.jpg',
+        category: 'I3 Plus',
+        href: '/agencies/i3-plus-marketing'
     },
     {
         id: 5,
-        title: 'Legal expertise to guide your business forward.',
-        subtitle: 'Navigating complex legal landscapes with strategic counsel.',
-        image: '/images/hero_images/Consult3.jpg',
-        category: 'Law',
-        href: '/services/legal',
+        title: 'Decentralizing access to opportunity across Africa.',
+        subtitle: 'Impact360 connects entrepreneurs, innovators, and investors beyond traditional hubs.',
+        image: '/photo/S43A9123.jpg',
+        category: 'Impact360',
+        href: '/agencies/impact360',
         objectFit: 'cover',
         objectPosition: '50% 40%'
     }
@@ -166,7 +166,7 @@ export default function HeroSection() {
                             style={{ opacity: 0, animation: 'slideInUp 0.6s ease-out 0.24s forwards' }}
                         >
                             <Link
-                                href='/auth/login'
+                                href='/#get-in-touch'
                                 className='text-white px-7 py-3 rounded-xl text-sm font-semibold transition-all hover:opacity-90 hover:shadow-lg hover:shadow-blue-500/20'
                                 style={{ backgroundColor: '#306CEC', fontFamily: 'DM Sans, sans-serif' }}
                             >

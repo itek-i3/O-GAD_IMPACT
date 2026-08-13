@@ -3,19 +3,17 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { CALENDLY_URL } from '@/lib/bookingUtils';
-import type { User } from '@supabase/supabase-js';
 
 interface BookingModalProps {
     isOpen: boolean;
     onClose: () => void;
     defaultService?: string;
+    calendlyUrl?: string;
 }
 
-export default function BookingModal({ isOpen, onClose, defaultService = '' }: BookingModalProps) {
+export default function BookingModal({ isOpen, onClose, defaultService = '', calendlyUrl = CALENDLY_URL }: BookingModalProps) {
     const [step, setStep] = useState<'form' | 'calendly' | 'success'>('form');
     const [error, setError] = useState<string | null>(null);
-    const [user, setUser] = useState<User | null>(null);
-    const [loadingAuth, setLoadingAuth] = useState(true);
     const savedFormData = useRef<any>(null);
 
     const [formData, setFormData] = useState({
@@ -33,24 +31,6 @@ export default function BookingModal({ isOpen, onClose, defaultService = '' }: B
     useEffect(() => {
         if (!isOpen) return;
         document.body.style.overflow = 'hidden';
-
-        async function checkAuth() {
-            setLoadingAuth(true);
-            const { data: { session } } = await supabase.auth.getSession();
-            const u = session?.user ?? null;
-            setUser(u);
-            if (u) {
-                setFormData(prev => ({
-                    ...prev,
-                    email: u.email || '',
-                    firstName: u.user_metadata?.first_name || '',
-                    lastName: u.user_metadata?.last_name || ''
-                }));
-            }
-            setLoadingAuth(false);
-        }
-
-        checkAuth();
         return () => { document.body.style.overflow = ''; };
     }, [isOpen]);
 
@@ -69,7 +49,7 @@ export default function BookingModal({ isOpen, onClose, defaultService = '' }: B
                 const { error: supabaseError } = await supabase
                     .from('booking_requests')
                     .insert([{
-                        user_id: user?.id,
+                        user_id: null,
                         first_name: fd.firstName,
                         last_name: fd.lastName,
                         email: fd.email,
@@ -109,7 +89,7 @@ export default function BookingModal({ isOpen, onClose, defaultService = '' }: B
 
         window.addEventListener('message', handleCalendlyEvent);
         return () => window.removeEventListener('message', handleCalendlyEvent);
-    }, [step, user, defaultService, onClose]);
+    }, [step, defaultService, onClose]);
 
     // Inject Calendly widget script when on the calendly step
     useEffect(() => {
@@ -136,7 +116,7 @@ export default function BookingModal({ isOpen, onClose, defaultService = '' }: B
         setStep('calendly');
     };
 
-    const calendlyUrl = `${CALENDLY_URL}?hide_gdpr_banner=1&primary_color=306CEC&name=${encodeURIComponent(formData.firstName + ' ' + formData.lastName)}&email=${encodeURIComponent(formData.email)}`;
+    const calendlyEmbedUrl = `${calendlyUrl}?hide_gdpr_banner=1&primary_color=306CEC&name=${encodeURIComponent(formData.firstName + ' ' + formData.lastName)}&email=${encodeURIComponent(formData.email)}`;
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
@@ -148,7 +128,7 @@ export default function BookingModal({ isOpen, onClose, defaultService = '' }: B
                         </svg>
                     </button>
 
-                    {(step === 'form' || step === 'calendly') && !loadingAuth && user && (
+                    {(step === 'form' || step === 'calendly') && (
                         <div className="flex items-center gap-2 mb-6">
                             <div className={`flex items-center gap-1.5 text-sm font-medium ${step === 'form' ? 'text-[#306CEC]' : 'text-gray-400'}`}>
                                 <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${step === 'form' ? 'bg-[#306CEC] text-white' : 'bg-gray-200 text-gray-500'}`}>1</span>
@@ -170,33 +150,11 @@ export default function BookingModal({ isOpen, onClose, defaultService = '' }: B
                                 </svg>
                             </div>
                             <h3 className="text-2xl font-bold text-gray-900 mb-2" style={{ fontFamily: 'League Spartan, sans-serif' }}>Session Booked!</h3>
-                            <p className="text-gray-600" style={{ fontFamily: 'DM Sans, sans-serif' }}>Your session has been scheduled. You will receive a confirmation email shortly. You can track your booking in your dashboard.</p>
+                            <p className="text-gray-600" style={{ fontFamily: 'DM Sans, sans-serif' }}>Your session has been scheduled. You will receive a confirmation email shortly.</p>
                         </div>
                     )}
 
-                    {step === 'form' && loadingAuth && (
-                        <div className="py-12 flex justify-center">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#306CEC]"></div>
-                        </div>
-                    )}
-
-                    {step === 'form' && !loadingAuth && !user && (
-                        <div className="text-center py-10">
-                            <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <svg className="w-8 h-8 text-[#306CEC]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                </svg>
-                            </div>
-                            <h3 className="text-2xl font-bold text-gray-900 mb-2" style={{ fontFamily: 'League Spartan, sans-serif' }}>Sign In Required</h3>
-                            <p className="text-gray-600 mb-6 max-w-sm mx-auto" style={{ fontFamily: 'DM Sans, sans-serif' }}>You must be logged in to book a session. This allows you to track your request status.</p>
-                            <div className="flex flex-col sm:flex-row justify-center gap-3">
-                                <a href="/auth/login" className="px-6 py-2.5 bg-[#306CEC] text-white font-medium rounded-lg hover:bg-blue-700 transition-colors" style={{ fontFamily: 'DM Sans, sans-serif' }}>Log In</a>
-                                <a href="/auth/signup" className="px-6 py-2.5 bg-white text-gray-700 border border-gray-300 font-medium rounded-lg hover:bg-gray-50 transition-colors" style={{ fontFamily: 'DM Sans, sans-serif' }}>Create Account</a>
-                            </div>
-                        </div>
-                    )}
-
-                    {step === 'form' && !loadingAuth && user && (
+                    {step === 'form' && (
                         <>
                             <div className="mb-6">
                                 <h2 className="text-2xl font-bold text-gray-900 mb-1" style={{ fontFamily: 'League Spartan, sans-serif' }}>Book a Session</h2>
@@ -234,14 +192,15 @@ export default function BookingModal({ isOpen, onClose, defaultService = '' }: B
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Service Needed</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Agency Needed</label>
                                         <select name="serviceRequested" value={formData.serviceRequested} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#306CEC] focus:border-[#306CEC] outline-none text-gray-900">
-                                            <option value="">Select a service...</option>
-                                            <option value="business-strategy">Business and Strategy</option>
-                                            <option value="technology">Technology and Digital</option>
-                                            <option value="legal">Legal and Structuring</option>
-                                            <option value="marketing">Marketing and Sales</option>
-                                            <option value="scaling">Scaling and Expansion</option>
+                                            <option value="">Select an agency...</option>
+                                            <option value="i3-plus-marketing">I3 Plus</option>
+                                            <option value="i3x-events">I3X Africa</option>
+                                            <option value="i3-launchpad">I3 Launchpad</option>
+                                            <option value="itek">iTek</option>
+                                            <option value="i3-studios">I3 Studios</option>
+                                            <option value="impact360">Impact360</option>
                                             <option value="other">Other</option>
                                         </select>
                                     </div>
@@ -289,7 +248,7 @@ export default function BookingModal({ isOpen, onClose, defaultService = '' }: B
                             )}
                             <div
                                 className="calendly-inline-widget rounded-xl overflow-hidden border border-gray-100"
-                                data-url={calendlyUrl}
+                                data-url={calendlyEmbedUrl}
                                 style={{ minWidth: '320px', height: '630px' }}
                             />
                         </>

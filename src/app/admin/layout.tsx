@@ -26,7 +26,7 @@ export default function AdminLayout({
             setIsAdmin(adminStatus);
 
             if (!adminStatus) {
-                router.push('/dashboard');
+                router.push('/');
             }
         }
 

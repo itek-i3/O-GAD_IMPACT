@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
 
 export default function ProgramsPage() {
-  redirect('/#programs');
+  redirect('/agencies/impact360');
 }

@@ -1,10 +1,9 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import BookingModal from '@/components/BookingModal';
 import { supabase } from '@/lib/supabaseClient';
 import { CALENDLY_URL } from '@/lib/bookingUtils';
-import type { User } from '@supabase/supabase-js';
+import { getAgency } from '@/data/agencies';
 
 function useInView(threshold = 0.1) {
   const ref = useRef<HTMLDivElement>(null);
@@ -60,6 +59,12 @@ const contactDetails = [
   },
 ];
 
+const trustStats = [
+  { value: 'Pan-Africa', label: 'Reach' },
+  { value: '24h', label: 'Response Time' },
+  { value: '200+', label: 'Clients Served' },
+];
+
 export default function ContactSection() {
   const [step, setStep] = useState<'form' | 'calendly' | 'success'>('form');
   const [formData, setFormData] = useState({
@@ -72,30 +77,9 @@ export default function ContactSection() {
     budgetRange: '',
     projectDescription: '',
   });
-  const [user, setUser] = useState<User | null>(null);
-  const [loadingAuth, setLoadingAuth] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isBookingOpen, setIsBookingOpen] = useState(false);
   const savedFormData = useRef<any>(null);
   const section = useInView();
-
-  useEffect(() => {
-    async function checkAuth() {
-      const { data: { session } } = await supabase.auth.getSession();
-      const u = session?.user ?? null;
-      setUser(u);
-      if (u) {
-        setFormData(prev => ({
-          ...prev,
-          email: u.email || '',
-          firstName: u.user_metadata?.first_name || '',
-          lastName: u.user_metadata?.last_name || '',
-        }));
-      }
-      setLoadingAuth(false);
-    }
-    checkAuth();
-  }, []);
 
   // Auto-reset to form after success
   useEffect(() => {
@@ -103,9 +87,9 @@ export default function ContactSection() {
     const timer = setTimeout(() => {
       setStep('form');
       setFormData({
-        firstName: user?.user_metadata?.first_name || '',
-        lastName: user?.user_metadata?.last_name || '',
-        email: user?.email || '',
+        firstName: '',
+        lastName: '',
+        email: '',
         phone: '',
         companyName: '',
         serviceRequested: '',
@@ -114,7 +98,7 @@ export default function ContactSection() {
       });
     }, 4000);
     return () => clearTimeout(timer);
-  }, [step, user]);
+  }, [step]);
 
   // Inject Calendly script when on calendly step
   useEffect(() => {
@@ -140,7 +124,7 @@ export default function ContactSection() {
         const { error: supabaseError } = await supabase
           .from('booking_requests')
           .insert([{
-            user_id: user?.id,
+            user_id: null,
             first_name: fd.firstName,
             last_name: fd.lastName,
             email: fd.email,
@@ -162,7 +146,7 @@ export default function ContactSection() {
     }
     window.addEventListener('message', handleCalendlyEvent);
     return () => window.removeEventListener('message', handleCalendlyEvent);
-  }, [step, user]);
+  }, [step]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -171,18 +155,15 @@ export default function ContactSection() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!user) {
-      setIsBookingOpen(true);
-      return;
-    }
     savedFormData.current = { ...formData };
     setStep('calendly');
   };
 
-  const calendlyUrl = `${CALENDLY_URL}?hide_gdpr_banner=1&primary_color=306CEC&name=${encodeURIComponent(formData.firstName + ' ' + formData.lastName)}&email=${encodeURIComponent(formData.email)}`;
+  const consultantCalendlyUrl = getAgency(formData.serviceRequested)?.calendlyUrl ?? CALENDLY_URL;
+  const calendlyUrl = `${consultantCalendlyUrl}?hide_gdpr_banner=1&primary_color=306CEC&name=${encodeURIComponent(formData.firstName + ' ' + formData.lastName)}&email=${encodeURIComponent(formData.email)}`;
 
   return (
-    <div id='get-in-touch' className='relative py-24 md:py-32 overflow-hidden' style={{ backgroundImage: 'url(/images/contact.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
+    <div id='get-in-touch' className='relative py-24 md:py-32 overflow-hidden' style={{ backgroundImage: 'url(/images/DSC_2662.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
       <div className='absolute inset-0 bg-gradient-to-br from-black/80 via-black/65 to-black/50' />
       <div className='absolute inset-0' style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(48,108,236,0.15) 0%, transparent 60%)' }} />
 
@@ -191,48 +172,48 @@ export default function ContactSection() {
 
           {/* ── Left: Info ── */}
           <div className='lg:sticky lg:top-28'>
-            <span className='inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-bold tracking-[0.2em] uppercase mb-6' style={{ color: '#306CEC', backgroundColor: 'rgba(48,108,236,0.2)', fontFamily: 'DM Sans, sans-serif', ...anim(section.inView, 0) }}>
-              <span className='w-1.5 h-1.5 rounded-full' style={{ backgroundColor: '#306CEC' }} />
-              Get In Touch
-            </span>
-            <h2 className='font-bold text-white leading-[1.05] mb-5' style={{ fontFamily: 'League Spartan, sans-serif', fontSize: 'clamp(2.5rem, 5vw, 3.8rem)', ...anim(section.inView, 0.08) }}>
+            <h2 className='font-bold text-white leading-[1.05] mb-5' style={{ fontFamily: 'League Spartan, sans-serif', fontSize: 'clamp(2.5rem, 5vw, 3.8rem)', ...anim(section.inView, 0) }}>
               Let's Build <br />Something Great
             </h2>
             <p className='text-[17px] leading-relaxed mb-10' style={{ color: 'rgba(255,255,255,0.65)', fontFamily: 'DM Sans, sans-serif', ...anim(section.inView, 0.14) }}>
-              Tell us about your goals and challenges. Our team will reach out within 24 hours to explore how we can help you move forward.
+              Tell us about your goals. Our team will reach out within 24 hours to help you move forward.
             </p>
 
-            {/* Contact details */}
-            <div className='flex flex-col gap-4 mb-10'>
+            {/* Contact details — frosted glass tiles over the photo background */}
+            <div className='flex flex-col gap-3 mb-10'>
               {contactDetails.map((item, idx) => (
-                <div key={idx} className='flex items-center gap-4' style={anim(section.inView, 0.2 + idx * 0.07)}>
-                  <div className='w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0' style={{ backgroundColor: 'rgba(48,108,236,0.8)' }}>
-                    {item.icon}
-                  </div>
-                  <div>
-                    <p className='text-xs font-semibold tracking-widest uppercase mb-0.5' style={{ color: 'rgba(255,255,255,0.4)', fontFamily: 'DM Sans, sans-serif' }}>{item.label}</p>
-                    {item.href ? (
-                      <a href={item.href} target='_blank' rel='noopener noreferrer' className='text-[15px] font-semibold text-white hover:text-blue-300 transition-colors' style={{ fontFamily: 'DM Sans, sans-serif' }}>{item.value}</a>
-                    ) : (
-                      <p className='text-[15px] font-semibold text-white' style={{ fontFamily: 'DM Sans, sans-serif' }}>{item.value}</p>
-                    )}
+                <div key={idx} style={anim(section.inView, 0.2 + idx * 0.07)}>
+                  <div
+                    className='flex items-center gap-4 rounded-2xl px-5 py-4'
+                    style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(14px)' }}
+                  >
+                    <div className='w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0' style={{ backgroundColor: 'rgba(48,108,236,0.8)' }}>
+                      {item.icon}
+                    </div>
+                    <div>
+                      <p className='text-xs font-semibold tracking-widest uppercase mb-0.5' style={{ color: 'rgba(255,255,255,0.4)', fontFamily: 'DM Sans, sans-serif' }}>{item.label}</p>
+                      {item.href ? (
+                        <a href={item.href} target='_blank' rel='noopener noreferrer' className='text-[15px] font-semibold text-white hover:text-blue-300 transition-colors' style={{ fontFamily: 'DM Sans, sans-serif' }}>{item.value}</a>
+                      ) : (
+                        <p className='text-[15px] font-semibold text-white' style={{ fontFamily: 'DM Sans, sans-serif' }}>{item.value}</p>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* Divider */}
-            <div className='h-px mb-8' style={{ backgroundColor: 'rgba(255,255,255,0.1)', ...anim(section.inView, 0.38) }} />
-
-            {/* Trust badges */}
-            <div className='flex flex-wrap gap-3' style={anim(section.inView, 0.42)}>
-              {['Pan-African Reach', 'Response within 24h', '200+ Clients Served'].map((badge, i) => (
-                <span key={i} className='inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold' style={{ color: 'rgba(255,255,255,0.6)', backgroundColor: 'rgba(255,255,255,0.08)', fontFamily: 'DM Sans, sans-serif' }}>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="#306CEC" className="w-3 h-3">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                  </svg>
-                  {badge}
-                </span>
+            {/* Trust stats — glass tiles echoing the stat-card treatment used elsewhere on the site */}
+            <div className='grid grid-cols-3 gap-3' style={anim(section.inView, 0.42)}>
+              {trustStats.map((stat, i) => (
+                <div
+                  key={i}
+                  className='rounded-2xl px-3 py-4 text-center'
+                  style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(14px)' }}
+                >
+                  <p className='text-lg font-bold text-white mb-0.5' style={{ fontFamily: 'League Spartan, sans-serif' }}>{stat.value}</p>
+                  <p className='text-[10px] uppercase tracking-wide' style={{ color: 'rgba(255,255,255,0.5)', fontFamily: 'DM Sans, sans-serif' }}>{stat.label}</p>
+                </div>
               ))}
             </div>
           </div>
@@ -250,42 +231,28 @@ export default function ContactSection() {
                     </svg>
                   </div>
                   <h3 className='text-2xl font-bold text-gray-900 mb-2' style={{ fontFamily: 'League Spartan, sans-serif' }}>Session Booked!</h3>
-                  <p className='text-gray-500 text-sm max-w-xs mx-auto'>Your session has been scheduled. You'll receive a confirmation email shortly and can track it in your dashboard.</p>
-                </div>
-              )}
-
-              {/* Auth loading */}
-              {step === 'form' && loadingAuth && (
-                <div className='py-12 flex justify-center'>
-                  <div className='animate-spin rounded-full h-8 w-8 border-b-2' style={{ borderColor: '#306CEC' }} />
+                  <p className='text-gray-500 text-sm max-w-xs mx-auto'>Your session has been scheduled. You'll receive a confirmation email shortly.</p>
                 </div>
               )}
 
               {/* Form */}
-              {step === 'form' && !loadingAuth && (
+              {step === 'form' && (
                 <>
-                  {/* Step indicator (logged-in only) */}
-                  {user && (
-                    <div className='flex items-center gap-2 mb-6'>
-                      <div className='flex items-center gap-1.5 text-sm font-medium text-[#306CEC]'>
-                        <span className='w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold bg-[#306CEC] text-white'>1</span>
-                        Your Details
-                      </div>
-                      <div className='flex-1 h-px bg-gray-200 mx-1' />
-                      <div className='flex items-center gap-1.5 text-sm font-medium text-gray-400'>
-                        <span className='w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold bg-gray-200 text-gray-500'>2</span>
-                        Pick a Time
-                      </div>
+                  <div className='flex items-center gap-2 mb-6'>
+                    <div className='flex items-center gap-1.5 text-sm font-medium text-[#306CEC]'>
+                      <span className='w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold bg-[#306CEC] text-white'>1</span>
+                      Your Details
                     </div>
-                  )}
+                    <div className='flex-1 h-px bg-gray-200 mx-1' />
+                    <div className='flex items-center gap-1.5 text-sm font-medium text-gray-400'>
+                      <span className='w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold bg-gray-200 text-gray-500'>2</span>
+                      Pick a Time
+                    </div>
+                  </div>
 
                   <div className='mb-6'>
                     <h3 className='text-2xl font-bold text-gray-900 mb-1.5' style={{ fontFamily: 'League Spartan, sans-serif' }}>Book a Session</h3>
-                    <p className='text-sm text-gray-500'>
-                      {user
-                        ? `Hi ${user.user_metadata?.first_name || user.email} — fill in the details, then pick a time.`
-                        : "Tell us what you need — we'll open the scheduler."}
-                    </p>
+                    <p className='text-sm text-gray-500'>Tell us what you need — we'll open the scheduler for the right specialist.</p>
                   </div>
 
                   {error && (
@@ -349,11 +316,12 @@ export default function ContactSection() {
                           onFocus={e => { e.currentTarget.style.borderColor = '#306CEC'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(48,108,236,0.1)'; }}
                           onBlur={e => { e.currentTarget.style.borderColor = '#e5e7eb'; e.currentTarget.style.boxShadow = 'none'; }}>
                           <option value=''>Select...</option>
-                          <option value='business-strategy'>Business & Strategy</option>
-                          <option value='technology'>Technology & Digital</option>
-                          <option value='legal'>Legal & Structuring</option>
-                          <option value='marketing'>Marketing & Sales</option>
-                          <option value='scaling'>Scaling & Expansion</option>
+                          <option value='i3-plus-marketing'>I3 Plus</option>
+                          <option value='i3x-events'>I3X Africa</option>
+                          <option value='i3-launchpad'>I3 Launchpad</option>
+                          <option value='itek'>iTek</option>
+                          <option value='i3-studios'>I3 Studios</option>
+                          <option value='impact360'>Impact360</option>
                           <option value='other'>Other</option>
                         </select>
                       </div>
@@ -386,7 +354,7 @@ export default function ContactSection() {
                     <button type='submit'
                       className='w-full py-3.5 rounded-xl font-bold text-white text-sm transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/30 hover:scale-[1.01] active:scale-[0.99]'
                       style={{ backgroundColor: '#306CEC', fontFamily: 'League Spartan, sans-serif', letterSpacing: '0.05em' }}>
-                      {user ? 'Next: Pick a Time →' : 'Book a Session →'}
+                      Next: Pick a Time →
                     </button>
                   </form>
                 </>
@@ -433,12 +401,6 @@ export default function ContactSection() {
 
         </div>
       </div>
-
-      <BookingModal
-        isOpen={isBookingOpen}
-        onClose={() => setIsBookingOpen(false)}
-        defaultService={formData.serviceRequested}
-      />
     </div>
   );
 }
