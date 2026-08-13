@@ -116,7 +116,7 @@ export default function Navbar() {
         { href: "/#hero", label: "Home" },
         { href: "/#our-company", label: "About" },
         { href: "/agencies", label: "Agencies", isDropdown: true },
-        { href: "/members", label: "Members" },
+        { href: "/members", label: "Directors" },
         { href: "/#get-in-touch", label: "Contact" }
     ];
 
