@@ -74,8 +74,6 @@ export default function ContactSection() {
     phone: '',
     companyName: '',
     serviceRequested: '',
-    budgetRange: '',
-    projectDescription: '',
   });
   const [error, setError] = useState<string | null>(null);
   const savedFormData = useRef<any>(null);
@@ -93,8 +91,6 @@ export default function ContactSection() {
         phone: '',
         companyName: '',
         serviceRequested: '',
-        budgetRange: '',
-        projectDescription: '',
       });
     }, 4000);
     return () => clearTimeout(timer);
@@ -131,8 +127,8 @@ export default function ContactSection() {
             phone: fd.phone,
             company_name: fd.companyName,
             service_requested: fd.serviceRequested,
-            project_description: fd.projectDescription,
-            budget_range: fd.budgetRange,
+            project_description: '',
+            budget_range: '',
             preferred_contact_method: 'email',
             scheduled_date: scheduledStartTime,
             status: 'scheduled',
@@ -307,48 +303,22 @@ export default function ContactSection() {
                         placeholder='Acme Corp' />
                     </div>
 
-                    <div className='grid grid-cols-2 gap-4'>
-                      <div>
-                        <label className='block text-xs font-bold tracking-widest uppercase text-gray-700 mb-2'>Service</label>
-                        <select name='serviceRequested' value={formData.serviceRequested} onChange={handleChange}
-                          className='w-full px-4 py-2.5 rounded-xl text-sm border border-gray-200 outline-none transition-all'
-                          style={{ color: formData.serviceRequested ? '#111827' : '#9ca3af' }}
-                          onFocus={e => { e.currentTarget.style.borderColor = '#306CEC'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(48,108,236,0.1)'; }}
-                          onBlur={e => { e.currentTarget.style.borderColor = '#e5e7eb'; e.currentTarget.style.boxShadow = 'none'; }}>
-                          <option value=''>Select...</option>
-                          <option value='i3-plus-marketing'>I3 Plus</option>
-                          <option value='i3x-events'>I3X Africa</option>
-                          <option value='i3-launchpad'>I3 Launchpad</option>
-                          <option value='itek'>iTek</option>
-                          <option value='i3-studios'>I3 Studios</option>
-                          <option value='impact360'>Impact360</option>
-                          <option value='other'>Other</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className='block text-xs font-bold tracking-widest uppercase text-gray-700 mb-2'>Budget</label>
-                        <select name='budgetRange' value={formData.budgetRange} onChange={handleChange}
-                          className='w-full px-4 py-2.5 rounded-xl text-sm border border-gray-200 outline-none transition-all'
-                          style={{ color: formData.budgetRange ? '#111827' : '#9ca3af' }}
-                          onFocus={e => { e.currentTarget.style.borderColor = '#306CEC'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(48,108,236,0.1)'; }}
-                          onBlur={e => { e.currentTarget.style.borderColor = '#e5e7eb'; e.currentTarget.style.boxShadow = 'none'; }}>
-                          <option value=''>Select a range...</option>
-                          <option value='Under 500k KES'>Under 500,000 KES</option>
-                          <option value='500k - 1M KES'>500,000 – 1,000,000 KES</option>
-                          <option value='1M - 5M KES'>1,000,000 – 5,000,000 KES</option>
-                          <option value='5M+ KES'>5,000,000+ KES</option>
-                          <option value='Not Sure'>Not Sure</option>
-                        </select>
-                      </div>
-                    </div>
-
                     <div>
-                      <label className='block text-xs font-bold tracking-widest uppercase text-gray-700 mb-2'>Project Details *</label>
-                      <textarea name='projectDescription' value={formData.projectDescription} onChange={handleChange} required rows={3}
-                        className='w-full px-4 py-2.5 rounded-xl text-sm text-gray-900 border border-gray-200 outline-none transition-all resize-none placeholder-gray-400'
+                      <label className='block text-xs font-bold tracking-widest uppercase text-gray-700 mb-2'>Service</label>
+                      <select name='serviceRequested' value={formData.serviceRequested} onChange={handleChange}
+                        className='w-full px-4 py-2.5 rounded-xl text-sm border border-gray-200 outline-none transition-all'
+                        style={{ color: formData.serviceRequested ? '#111827' : '#9ca3af' }}
                         onFocus={e => { e.currentTarget.style.borderColor = '#306CEC'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(48,108,236,0.1)'; }}
-                        onBlur={e => { e.currentTarget.style.borderColor = '#e5e7eb'; e.currentTarget.style.boxShadow = 'none'; }}
-                        placeholder='Tell us about your goals and challenges...' />
+                        onBlur={e => { e.currentTarget.style.borderColor = '#e5e7eb'; e.currentTarget.style.boxShadow = 'none'; }}>
+                        <option value=''>Select...</option>
+                        <option value='i3-plus-marketing'>I3 Plus</option>
+                        <option value='i3x-events'>I3X Africa</option>
+                        <option value='i3-launchpad'>I3 Launchpad</option>
+                        <option value='itek'>iTek</option>
+                        <option value='i3-studios'>I3 Studios</option>
+                        <option value='impact360'>Impact360</option>
+                        <option value='other'>Other</option>
+                      </select>
                     </div>
 
                     <button type='submit'

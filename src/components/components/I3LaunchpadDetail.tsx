@@ -112,6 +112,15 @@ export default function I3LaunchpadDetail({ agency }: { agency: Agency }) {
               <p className='text-base md:text-lg leading-relaxed mb-8' style={{ color: 'rgba(255,255,255,0.75)', fontFamily: 'DM Sans, sans-serif', maxWidth: '480px', opacity: 0, animation: 'slideInUp 0.55s ease-out 0.3s both' }}>
                 {agency.tagline}
               </p>
+              <Link
+                href='/members/samuel-obukosia'
+                className='inline-flex items-center gap-2.5 pl-1.5 pr-4 py-1.5 rounded-full mb-6 transition-all hover:bg-white/[0.14] group'
+                style={{ backgroundColor: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.15)', opacity: 0, animation: 'slideInUp 0.55s ease-out 0.35s both' }}
+              >
+                <img src='/profile/samuel-headshot.jpg' alt='Samuel Obukosia' className='w-8 h-8 rounded-full object-cover' />
+                <span className='text-[13px] font-medium text-white/85 group-hover:text-white transition-colors' style={{ fontFamily: 'DM Sans, sans-serif' }}>Meet Samuel, your session host</span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5 text-white/60 group-hover:text-white group-hover:translate-x-0.5 transition-all"><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+              </Link>
               <div style={{ opacity: 0, animation: 'slideInUp 0.55s ease-out 0.4s both' }}>
                 <button onClick={() => setIsBookingOpen(true)} className='text-white px-7 py-3 rounded-xl text-sm font-semibold transition-all hover:opacity-90' style={{ backgroundColor: ACCENT, fontFamily: 'DM Sans, sans-serif' }}>
                   Book a Session
