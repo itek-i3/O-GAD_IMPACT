@@ -136,7 +136,7 @@ export default function MemberDetail({ member }: { member: Member }) {
                 </span>
               </div>
               <h2 className='font-bold text-gray-900 mb-6' style={{ fontFamily: 'League Spartan, sans-serif', fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)' }}>
-                How {firstName} Works
+                About {firstName}
               </h2>
               <div className='space-y-4 mb-9'>
                 {bioParagraphs.map((paragraph, i) => (
@@ -192,6 +192,40 @@ export default function MemberDetail({ member }: { member: Member }) {
           </div>
         </div>
       </section>
+
+      {/* ── How they work — numbered process steps (only when provided) ── */}
+      {member.steps && member.steps.length > 0 && (
+        <section className='py-16 md:py-24 bg-white'>
+          <div className='max-w-6xl mx-auto px-6 md:px-12'>
+            <div className='flex items-center gap-3 mb-4'>
+              <span className='block w-6 h-px' style={{ backgroundColor: ACCENT }} />
+              <span className='text-[11px] font-bold tracking-[0.22em] uppercase' style={{ color: ACCENT, fontFamily: 'DM Sans, sans-serif' }}>
+                Process
+              </span>
+            </div>
+            <h2 className='font-bold text-gray-900 mb-10' style={{ fontFamily: 'League Spartan, sans-serif', fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)' }}>
+              How {firstName} Works
+            </h2>
+            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
+              {member.steps.map((step) => (
+                <div
+                  key={step.num}
+                  className='rounded-2xl p-6 border border-gray-100 hover:border-blue-100 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300'
+                  style={{ backgroundColor: '#fafafa' }}
+                >
+                  <div className='flex items-center gap-3 mb-3'>
+                    <div className='w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0' style={{ backgroundColor: 'rgba(48,108,236,0.1)', border: '1.5px solid rgba(48,108,236,0.2)' }}>
+                      <span className='text-xs font-bold' style={{ color: ACCENT, fontFamily: 'League Spartan, sans-serif' }}>{step.num}</span>
+                    </div>
+                    <h3 className='text-[15px] font-bold text-gray-900 leading-snug' style={{ fontFamily: 'League Spartan, sans-serif' }}>{step.title}</h3>
+                  </div>
+                  <p className='text-gray-600 text-sm leading-relaxed' style={{ fontFamily: 'DM Sans, sans-serif' }}>{step.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {agency && (
         <BookingModal

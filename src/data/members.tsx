@@ -10,6 +10,7 @@ export interface Member {
   description: string;
   bio?: string[];
   expertise: string[];
+  steps?: { num: string; title: string; desc: string }[];
 }
 
 export const members: Member[] = [
@@ -85,15 +86,21 @@ export const members: Member[] = [
     agency: 'I3 Launchpad',
     agencySlug: 'i3-launchpad',
     photo: '/profile/samuel-headshot.jpg',
-    description: 'Samuel enjoys figuring out things—especially the messy, confusing, "we have a great idea but now what?" part of building a business.',
+    description: 'Samuel helps founders and businesses build, grow, scale, and move into their next stage. From turning an idea into a viable business and taking it to market, to scaling operations, entering new markets, and preparing for acquisition or exit, he helps businesses understand where they are and what needs to happen next.',
     bio: [
-      'Samuel enjoys figuring out things—especially the messy, confusing, "we have a great idea but now what?" part of building a business.',
-      'He works with founders and SMEs to make sense of their ideas, sharpen their business models, solve the problems getting in the way, and turn good intentions into things that actually work—enhancing execution.',
-      'He\'s big on getting things moving. Less theory. More "okay, so what are we doing about it?"',
-      'And if he doesn\'t know the answer, he\'ll probably know someone who does.',
-      'He builds with founders, not just advises them; turns complex problems into practical next steps; and connects people, ideas, and opportunities—believing good businesses should solve real problems. Always curious, occasionally overthinks, usually figures it out.',
+      'Samuel works with founders, startups, and SMEs to help them move from one stage of business to the next.',
+      'He supports businesses from innovation and venture building through market entry, growth, scaling, expansion, and strategic exits.',
+      'His approach starts with a simple question: where is the business now, where does it need to go, and what is stopping it from getting there?',
+      'From there, Samuel helps build clear strategies and practical plans that can actually be executed. He believes good strategy should lead to action. Less theory. More movement.',
+      'Whether a business is building something new, looking for customers, entering a new market, scaling its operations, or exploring acquisition and exit opportunities, Samuel helps bring clarity to the next move.',
     ],
-    expertise: ['Business Diagnostics', 'Strategy & Roadmapping', 'Mentorship & Advisory', 'Operational Execution Support'],
+    expertise: ['Venture Building', 'Go-to-Market', 'Business Scaling', 'Market Expansion', 'Exit Strategy'],
+    steps: [
+      { num: '01', title: 'Understand the Business', desc: 'Understand the business, its goals, its stage, and where it wants to go.' },
+      { num: '02', title: 'Identify the Constraint', desc: 'Find what is holding the business back or slowing its growth.' },
+      { num: '03', title: 'Build the Strategy', desc: 'Create a clear plan for growth, market entry, scaling, expansion, or transition.' },
+      { num: '04', title: 'Support Execution', desc: 'Turn the strategy into practical actions and support the business in making progress.' },
+    ],
   },
 ];
 

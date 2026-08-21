@@ -155,6 +155,19 @@ export default function ContactSection() {
     setStep('calendly');
   };
 
+  const resetForm = () => {
+    setError(null);
+    setStep('form');
+    setFormData({
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      companyName: '',
+      serviceRequested: '',
+    });
+  };
+
   const consultantCalendlyUrl = getAgency(formData.serviceRequested)?.calendlyUrl ?? CALENDLY_URL;
   const calendlyUrl = `${consultantCalendlyUrl}?hide_gdpr_banner=1&primary_color=306CEC&name=${encodeURIComponent(formData.firstName + ' ' + formData.lastName)}&email=${encodeURIComponent(formData.email)}`;
 
@@ -216,7 +229,20 @@ export default function ContactSection() {
 
           {/* ── Right: Form / Calendar / Success ── */}
           <div style={anim(section.inView, 0.18)}>
-            <div className='bg-white rounded-3xl shadow-2xl p-8 md:p-10' style={{ fontFamily: 'DM Sans, sans-serif' }}>
+            <div className='relative bg-white rounded-3xl shadow-2xl p-8 md:p-10' style={{ fontFamily: 'DM Sans, sans-serif' }}>
+
+              {step !== 'form' && (
+                <button
+                  type='button'
+                  onClick={resetForm}
+                  aria-label='Close and start over'
+                  className='absolute top-5 right-5 md:top-6 md:right-6 text-gray-400 hover:text-gray-600 transition-colors z-10'
+                >
+                  <svg className='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
+                  </svg>
+                </button>
+              )}
 
               {/* Success */}
               {step === 'success' && (
