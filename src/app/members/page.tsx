@@ -232,7 +232,7 @@ export default function MembersPage() {
             Meet the Directors
           </h1>
           <p className='text-lg leading-relaxed max-w-xl' style={{ color: 'rgba(255,255,255,0.75)', fontFamily: 'DM Sans, sans-serif' }}>
-            Five people running TOIG&apos;s agencies day to day &mdash; each one leading a different piece of the group.
+            The people running TOIG&apos;s agencies day to day &mdash; each one leading a different piece of the group.
           </p>
         </div>
         <div className='absolute bottom-0 left-0 w-full overflow-hidden leading-none'>

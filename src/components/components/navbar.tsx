@@ -177,7 +177,7 @@ export default function Navbar() {
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-2.5 flex-shrink-0">
                         <Image
-                            src="/images/1001224211.png"
+                            src="/images/toig-logo.png"
                             alt="O'Gad Impact Group"
                             width={32}
                             height={32}

@@ -12,7 +12,7 @@ const Footer = () => {
                     <div className="space-y-5 md:col-span-1">
                         <div className="flex items-center gap-2.5">
                             <Image
-                                src="/images/1001224211.png"
+                                src="/images/toig-logo.png"
                                 alt="O'Gad Impact Group"
                                 width={32}
                                 height={32}
