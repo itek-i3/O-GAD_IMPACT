@@ -153,7 +153,7 @@ export const agencies: Agency[] = [
     category: 'Events & Experiences',
     tagline: 'Platforms for collaboration, investment, and business connection.',
     description: 'Events that connect people, capital, and ideas.',
-    calendlyUrl: 'https://calendly.com/collinsaroniofficial/meeting-with-collins-aroni',
+    calendlyUrl: 'https://calendly.com/comurwa-kabarak',
     heroImage: '/photo/S43A3789.jpg',
     overviewImage: '/photo/S43A3792.jpg',
     overviewTitle: 'Where Business',
