@@ -19,7 +19,7 @@ export const members: Member[] = [
     name: 'O\'Maxwell Gad',
     title: 'Business Strategist, Operator & Ecosystem Builder',
     role: 'Founder & Executive Director',
-    agency: 'Impact360',
+    agency: 'TOIG',
     agencySlug: 'impact360',
     photo: '/profile/maxwell-crop.jpg',
     description: 'O\'Maxwell Gad is a business strategist, operator and ecosystem builder working at the intersection of operations, growth, innovation and technology.',
